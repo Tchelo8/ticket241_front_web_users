@@ -20,6 +20,10 @@ const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default:
 const OtpVerificationPage = lazy(() => import('./pages/OtpVerificationPage').then((m) => ({ default: m.OtpVerificationPage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then((m) => ({ default: m.SignupPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
+const OrganizersPage = lazy(() => import('./pages/OrganizersPage').then((m) => ({ default: m.OrganizersPage })));
+const HelpPage = lazy(() => import('./pages/HelpPage').then((m) => ({ default: m.HelpPage })));
+const TermsPage = lazy(() => import('./pages/LegalPages').then((m) => ({ default: m.TermsPage })));
+const PrivacyPage = lazy(() => import('./pages/LegalPages').then((m) => ({ default: m.PrivacyPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 /** Bascule l'attribut data-theme sur <html>. */
@@ -72,6 +76,10 @@ export function App() {
           <Route path="/inscription" element={<SignupPage />} />
           <Route path="/inscription/verification" element={<OtpVerificationPage />} />
           <Route path="/profil" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="/organisateurs" element={<OrganizersPage />} />
+          <Route path="/aide" element={<HelpPage />} />
+          <Route path="/conditions-de-vente" element={<TermsPage />} />
+          <Route path="/confidentialite" element={<PrivacyPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </Suspense>

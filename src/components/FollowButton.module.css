@@ -1,0 +1,7 @@
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 13px; border-radius: 99px; flex: none;
+  cursor: pointer; font: 600 13px var(--font); transition: all .2s;
+  background: transparent; color: var(--ink); border: 1px solid var(--line2);
+}
+.btn:hover { background: color-mix(in oklch, var(--acc) 8%, transparent); }
+.on, .on:hover { background: var(--accs); color: var(--acc); border-color: var(--acc); }

@@ -1,0 +1,17 @@
+.pill {
+  display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; min-width: 0;
+  border-radius: 99px; border: 1px solid var(--line2); background: var(--card); box-shadow: var(--sh);
+}
+.lg { height: 56px; padding: 0 20px; }
+.pill:focus-within { border-color: var(--acc); }
+.icon { color: var(--ink2); flex: none; }
+.input {
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+  font: 400 15.5px var(--font); color: var(--ink);
+}
+.lg .input, .md .input { font-size: 16px; }
+.input::placeholder { color: var(--ink3); }
+.input::-webkit-search-cancel-button { display: none; }
+.input:focus-visible { outline: none; }
+.clear { border: none; background: none; padding: 0; color: var(--ink3); cursor: pointer; display: flex; flex: none; }
+.clear:hover { color: var(--ink); }

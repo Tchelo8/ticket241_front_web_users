@@ -10,6 +10,7 @@ import { DoubleRule } from '../components/DoubleRule';
 import { EventCard } from '../components/EventCard';
 import { Toggle } from '../components/Toggle';
 import { CATEGORIES } from '../mocks/events';
+import { ORGANIZERS } from '../mocks/organizers';
 import { usePrefs } from '../store/prefs';
 import { fcfa, fcfaShort, monthOf, plural } from '../lib/format';
 import { sold } from '../lib/events';
@@ -49,6 +50,9 @@ export function ExplorerPage() {
   const sort: Sort = SORTS.some((o) => o.id === params.get('tri')) ? (params.get('tri') as Sort) : 'date';
   const refundable = params.get('remb') === '1';
   const q = params.get('q') ?? '';
+  // Depuis l'annuaire : ?organisateur=ifg
+  const orgId = params.get('organisateur');
+  const org = orgId ? ORGANIZERS.find((o) => o.id === orgId) : undefined;
 
   const update = (patch: Record<string, string | null>, replace = false) => {
     const next = new URLSearchParams(params);
@@ -69,20 +73,22 @@ export function ExplorerPage() {
         (!needle || [e.name, e.venue, e.city].some((t) => t.toLowerCase().includes(needle))) &&
         e.priceFrom <= max &&
         (month === null || monthOf(e.startsAt) === month) &&
-        (!refundable || e.refundable),
+        (!refundable || e.refundable) &&
+        (!orgId || e.organizer.id === orgId),
       )
       .sort((a, b) =>
         sort === 'prix' ? a.priceFrom - b.priceFrom
           : sort === 'popularite' ? sold(b) - sold(a)
             : new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
       );
-  }, [events, cat, q, max, when, refundable, sort]);
+  }, [events, cat, q, max, when, refundable, sort, orgId]);
 
   const active = [
     cat !== 'Tous' && { label: cat, clear: () => update({ cat: null }) },
     when !== 'Tous' && { label: when, clear: () => update({ quand: null }) },
     max < PRICE_MAX && { label: '≤ ' + fcfaShort(max), clear: () => update({ max: null }) },
     refundable && { label: 'Remboursable', clear: () => update({ remb: null }) },
+    orgId && { label: org?.name ?? orgId, clear: () => update({ organisateur: null }) },
   ].filter(Boolean) as { label: string; clear: () => void }[];
 
   return (

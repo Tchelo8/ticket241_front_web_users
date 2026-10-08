@@ -1,0 +1,20 @@
+.list { border-top: 1px solid var(--line); }
+.item { border-bottom: 1px solid var(--line); }
+.trigger {
+  width: 100%; display: flex; align-items: center; gap: 14px; padding: 18px 0; border: none; background: none;
+  cursor: pointer; text-align: left; color: var(--ink);
+}
+.tag {
+  flex: none; min-width: 86px; font: 600 9.5px var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--ink3);
+}
+.q { flex: 1; font: 600 16.5px/1.35 var(--font); transition: color .2s; }
+.trigger:hover .q { color: var(--acc); }
+.open .q { color: var(--acc); }
+.plus { flex: none; color: var(--acc); transition: transform .25s var(--ease); }
+.open .plus { transform: rotate(45deg); }
+/* Réponse alignée sous la question ; retrait ramené à 0 sous ~480px, sans media query. */
+.panel {
+  padding: 0 34px 20px clamp(0px, (100% - 480px) * 1000, 100px);
+  font: 400 15.5px/1.6 var(--font); color: var(--ink2); text-wrap: pretty;
+  animation: var(--kf-drop) .25s var(--ease) both;
+}

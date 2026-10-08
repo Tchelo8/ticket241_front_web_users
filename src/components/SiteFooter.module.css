@@ -5,3 +5,5 @@
 }
 .links { display: flex; gap: 22px; flex-wrap: wrap; font: 400 13.5px var(--font); }
 .copy { font: 400 12.5px var(--font); color: var(--ink3); }
+.links a { color: var(--acc); }
+.links a:hover { text-decoration: underline; text-underline-offset: 3px; }

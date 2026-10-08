@@ -8,8 +8,8 @@
   transition: border-color .2s, color .2s;
 }
 .pending { border-color: var(--acc); }
-.error .cell { border-color: var(--acc2); color: var(--acc2); }
 .disabled .cell { background: var(--surf); color: var(--ink3); box-shadow: none; }
+.error .cell { border-color: var(--acc2); color: var(--acc2); }
 /* Un seul champ, transparent, posé sur les cases : frappe, collage et remplissage SMS. */
 .input {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: none;

@@ -20,6 +20,8 @@ const onlyDigits = (v: string, length: number) => v.replace(/\D/g, '').slice(0, 
  * Le libellé (<label htmlFor={id}>) est fourni par l'écran appelant.
  */
 export function OtpInput({ id, value, onChange, length = 4, error, disabled, describedBy, autoFocus }: Props) {
+  // Case en attente : la prochaine à remplir ; la dernière reste active une fois le code complet.
+  const isPending = (i: number) => i === value.length || (i === length - 1 && value.length === length);
   const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
     // Le collage « 12 34 » ou « 12-34 » serait tronqué par maxLength avant filtrage.
     e.preventDefault();
@@ -32,7 +34,7 @@ export function OtpInput({ id, value, onChange, length = 4, error, disabled, des
     >
       <div className={s.cells} aria-hidden data-testid="otp-cells">
         {Array.from({ length }, (_, i) => (
-          <div key={i} className={cx(s.cell, !disabled && !error && i === value.length && s.pending)} data-pending={i === value.length || undefined}>
+          <div key={i} className={cx(s.cell, !disabled && !error && isPending(i) && s.pending)} data-pending={isPending(i) || undefined}>
             {value[i] ?? ''}
           </div>
         ))}

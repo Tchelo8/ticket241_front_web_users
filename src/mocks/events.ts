@@ -24,7 +24,7 @@ const RAW: Raw[] = [
     address: 'Route de Nzeng-Ayong', city: 'Libreville', image: '/images/sibang.jpg',
     startsAt: '2026-09-06T06:30:00+01:00', doorsAt: '2026-09-06T05:45:00+01:00', priceFrom: 5000,
     seatsLeft: 312, seatsTotal: 600, minAge: '16 ans',
-    organizer: { id: 'gtc', name: 'Gabon Trail Collectif' },
+    organizer: { id: 'trail', name: 'Gabon Trail Collectif' },
     description: "Douze kilomètres de piste forestière au cœur de l'arboretum, avec deux ravitaillements et un chronométrage à puce. Départ groupé à 6h30, avant la chaleur.",
   },
   {
@@ -32,7 +32,7 @@ const RAW: Raw[] = [
     address: 'Front de mer', city: 'Port-Gentil', image: '/images/oiseau.jpg',
     startsAt: '2026-09-20T17:00:00+01:00', doorsAt: '2026-09-20T16:00:00+01:00', priceFrom: 20000,
     seatsLeft: 1480, seatsTotal: 2500, minAge: 'Tout public',
-    organizer: { id: 'oc', name: 'Ogooué Culture' },
+    organizer: { id: 'ogooue', name: 'Ogooué Culture' },
     description: "Deux scènes face à l'océan, dix-huit artistes de la sous-région, un village d'artisans et une programmation jeunesse l'après-midi.",
   },
   {
@@ -48,7 +48,7 @@ const RAW: Raw[] = [
     address: 'Haut-Ogooué', city: 'Franceville', image: '/images/party.png',
     startsAt: '2026-10-04T21:00:00+01:00', doorsAt: '2026-10-04T20:00:00+01:00', priceFrom: 8000,
     seatsLeft: 640, seatsTotal: 1200, minAge: '18 ans',
-    organizer: { id: 'mairie-fcv', name: 'Mairie de Franceville' },
+    organizer: { id: 'franceville', name: 'Mairie de Franceville' },
     description: "La place devient piste de danse jusqu'au lever du jour : afrobeat, rumba et une scène ouverte aux DJ du Haut-Ogooué.",
   },
   {
@@ -72,7 +72,7 @@ const RAW: Raw[] = [
     address: 'Nzeng-Ayong', city: 'Libreville', image: '/images/enb.jpg',
     startsAt: '2026-10-11T18:00:00+01:00', doorsAt: '2026-10-11T17:00:00+01:00', priceFrom: 6000,
     seatsLeft: 220, seatsTotal: 2200, minAge: 'Tout public',
-    organizer: { id: 'fegabasket', name: 'Fédération Gabonaise de Basket' },
+    organizer: { id: 'fegaba', name: 'Fédération Gabonaise de Basket' },
     description: 'La finale nationale, précédée du match des espoirs à 16 h.',
   },
   {
@@ -80,7 +80,7 @@ const RAW: Raw[] = [
     address: 'Quartier Louis', city: 'Libreville', image: '/images/oiseau.jpg',
     startsAt: '2026-10-25T19:00:00+01:00', doorsAt: '2026-10-25T18:15:00+01:00', priceFrom: 4000,
     seatsLeft: 520, seatsTotal: 900, minAge: 'Tout public',
-    organizer: { id: 'chorale-sm', name: 'Chorale Sainte-Marie' },
+    organizer: { id: 'sainte', name: 'Chorale Sainte-Marie' },
     description: 'Six chorales de Libreville réunies pour un concert de deux heures, au bénéfice des œuvres paroissiales.',
   },
 ];

@@ -177,6 +177,11 @@ describe('OtpVerificationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Trop de tentatives. Réessayez dans quelques minutes.');
     expect(input()).toBeDisabled();
     await waitFor(() => expect(submitButton()).toHaveAttribute('aria-disabled', 'true'));
+
+    // Renvoi forcé : disponible tout de suite, et il débloque la saisie.
+    await user.click(screen.getByRole('button', { name: 'Renvoyer le code' }));
+    await waitFor(() => expect(input()).not.toBeDisabled());
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('« Effacer » vide le code', async () => {

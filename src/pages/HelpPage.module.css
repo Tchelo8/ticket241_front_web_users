@@ -1,0 +1,33 @@
+.title { margin-top: 28px; font: 600 clamp(36px, 5vw, 60px)/1 var(--font); letter-spacing: -.034em; }
+.title span { display: block; font-style: italic; font-weight: 400; color: var(--ink2); }
+.search { margin-top: 22px; max-width: 640px; }
+.topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 14px; margin-top: 28px; }
+.topic {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--card); box-shadow: var(--sh); cursor: pointer; text-align: left;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.topic:hover { transform: translateY(-2px); box-shadow: var(--shm); }
+.topicOn { border-color: var(--acc); }
+.topicIcon { color: var(--acc); }
+.topicT { font: 600 17px var(--font); color: var(--ink); }
+.topicD { font: 400 13px var(--font); color: var(--ink3); }
+.cols { display: flex; gap: clamp(24px, 4vw, 56px); flex-wrap: wrap; align-items: flex-start; margin-top: 40px; }
+.faq { flex: 3 1 480px; min-width: 0; }
+.cats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.list { margin-top: 18px; }
+.none { margin-top: 24px; font: 400 15px var(--font); color: var(--ink2); }
+.aside { flex: 1 1 300px; position: sticky; top: var(--header-offset); display: flex; flex-direction: column; gap: 14px; }
+.contact { padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); box-shadow: var(--shm); }
+.contactTitle { margin-top: 8px; font: 600 22px/1.15 var(--font); letter-spacing: -.02em; }
+.contactBody { margin-top: 8px; font: 400 14px/1.5 var(--font); color: var(--ink2); }
+.contactActions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.wa { height: 50px; font-size: 15px; box-shadow: none; }
+.mail { height: 48px; }
+.hours { display: flex; align-items: center; gap: 8px; margin-top: 14px; font: 400 12.5px var(--font); color: var(--ink3); }
+.terms {
+  display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px dashed var(--line2); border-radius: 6px;
+  text-decoration: none; color: var(--ink);
+}
+.terms:hover { color: var(--ink); border-color: var(--acc); }
+.termsLabel { flex: 1; font: 500 14.5px var(--font); }

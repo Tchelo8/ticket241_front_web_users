@@ -11,3 +11,6 @@
   border: 1px solid var(--acc); background: var(--accs); color: var(--acc); font: 500 12.5px var(--font);
 }
 .removable:hover { color: var(--acc-pressed); }
+.md { padding: 8px 14px; font-size: 13.5px; }
+.withCount { gap: 8px; }
+.count { font: 400 12px var(--font); opacity: .65; font-variant-numeric: tabular-nums; }

@@ -34,12 +34,22 @@ un paiement est confirmé environ 5 s après la demande.
 | `src/pages/` | Un écran par route |
 | `src/store/` | État global Zustand : thème, ville, favoris (localStorage), panier (sessionStorage), paiement, session |
 | `src/api/` | Accès aux données + hooks TanStack Query (statut de paiement interrogé toutes les 3 s) |
-| `src/mocks/` | Les neuf événements, les villes, les billets de démonstration |
+| `src/mocks/` | Les neuf événements, les villes, les billets, les organisateurs et la FAQ de démonstration |
+| `src/content/` | Conditions de vente et politique de confidentialité (texte de démonstration, à faire valider par un juriste) |
+| `src/config/support.ts` | Coordonnées du support (numéro WhatsApp à renseigner) |
 
 ## Routes
 
 `/` · `/explorer` (filtres dans l'URL : `?cat=Concert&max=10000&quand=Septembre&tri=prix&remb=1&q=jazz`) ·
 `/evenements/:id` · `/paiement` → `/paiement/attente` → `/paiement/confirme` · `/billets` (`?onglet=passes`) ·
-`/billets/:ref` · `/favoris` · `/connexion` · `/inscription` → `/inscription/verification` · `/profil`.
+`/billets/:ref` · `/favoris` · `/connexion` · `/inscription` → `/inscription/verification` · `/profil` ·
+`/organisateurs` (`?type=Sport&q=bar`) · `/aide` (`?theme=Paiement&q=rembours`) · `/conditions-de-vente` · `/confidentialite`.
 
 Les routes de paiement, de billets et le profil redirigent vers `/connexion?retour=…` si l'utilisateur n'est pas connecté.
+
+## Avant la mise en production
+
+- Les informations des organisateurs réels de l'annuaire (Entre Nous Bar, Le Code Bar, Le Palenqué, LINAF…) sont **fictives** :
+  les remplacer et obtenir l'accord des structures pour l'usage de leur nom et de leur logo.
+- Faire valider les textes légaux par un juriste, puis retirer l'encadré « Texte de démonstration ».
+- Renseigner le numéro WhatsApp du support dans `src/config/support.ts`.

@@ -2,7 +2,7 @@
  * Client d'inscription mocké.
  * - « 0000 » : code incorrect ; au 5e essai incorrect, trop de tentatives.
  * - tout autre code à 4 chiffres : succès.
- * - un code expire 10 minutes après son envoi.
+ * - un code expire 10 minutes après son envoi ; un renvoi remet les essais à zéro.
  */
 import { OtpError, type SignupApi, type SignupDraft } from './auth.types';
 
@@ -44,7 +44,11 @@ export const mockSignupApi: SignupApi = {
   async resend(phone) {
     await wait(mockLatency.ms);
     const p = pending.get(key(phone));
-    if (p) p.sentAt = Date.now();
+    // Nouveau code : le compteur d'essais repart de zéro.
+    if (p) {
+      p.sentAt = Date.now();
+      p.failures = 0;
+    }
   },
 };
 

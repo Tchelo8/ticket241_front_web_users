@@ -7,6 +7,8 @@ import { useAuth } from '../store/auth';
 import { useSignup } from '../store/signup';
 import { formatCountdown } from '../lib/format';
 import { cx } from '../lib/cx';
+import { USE_MOCKS } from '../lib/clock';
+import { MOCK_INVALID_CODE } from '../api/auth.mock';
 import s from './OtpVerificationPage.module.css';
 
 export const CODE_LENGTH = 4;
@@ -78,8 +80,8 @@ export function OtpVerificationPage() {
     } catch (err) {
       const kind: ErrorKind = err instanceof OtpError ? err.code : 'network';
       setError(kind);
-      // Code expiré : le renvoi devient disponible immédiatement.
-      if (kind === 'expired') {
+      // Code expiré ou trop de tentatives : renvoi forcé, disponible immédiatement.
+      if (kind === 'expired' || kind === 'too_many') {
         setResendAt(Date.now());
         setNow(Date.now());
       }
@@ -90,12 +92,13 @@ export function OtpVerificationPage() {
   };
 
   const resend = async () => {
-    if (waitS > 0 || resending || locked) return;
+    if (waitS > 0 || resending) return;
     setResending(true);
     try {
       await signupApi.resend(fields.phone);
       setCode('');
-      if (error === 'expired' || error === 'invalid') setError(null);
+      // Un nouveau code lève aussi le blocage « trop de tentatives ».
+      setError(null);
       setInfo('Un nouveau code vient de vous être envoyé.');
       const t = Date.now();
       setResendAt(t + RESEND_DELAY_S * 1000);
@@ -116,12 +119,11 @@ export function OtpVerificationPage() {
 
   return (
     <main className={s.main}>
-      <div className={s.top}>
-        <Link to="/inscription" className="back-link"><ArrowLeft size={17} />Modifier mes informations</Link>
-        <div className={s.steps}>
-          Étape 2 sur 2
-          <span className={s.bars} aria-hidden><span className={s.bar} /><span className={s.bar} /></span>
-        </div>
+      <Link to="/inscription" className="back-link"><ArrowLeft size={17} />Modifier mes informations</Link>
+      <div className={s.steps}>
+        <span className={s.bar} aria-hidden />
+        <span className={s.bar} aria-hidden />
+        <span className={s.stepsLabel}>Étape 2 sur 2</span>
       </div>
 
       <div className={s.kicker}>Vérification</div>
@@ -131,28 +133,28 @@ export function OtpVerificationPage() {
       </p>
 
       <form ref={containerRef} onSubmit={submit} noValidate>
-        <label htmlFor={inputId} className={s.label}>Code à quatre chiffres</label>
+        <label htmlFor={inputId} className="sr-only">Code à quatre chiffres</label>
+        <div className={s.code}>
         <OtpInput
           id={inputId}
           value={code}
           onChange={change}
           length={CODE_LENGTH}
-          error={error === 'invalid'}
+          error={!!error && error !== 'network'}
           disabled={locked || busy}
           describedBy={error ? errorId : undefined}
           autoFocus
         />
+        </div>
         {error && (
           <div id={errorId} className={s.error} role="alert">
-            <WarningCircle size={18} />
+            <WarningCircle size={17} />
             <span>{MESSAGES[error]}</span>
           </div>
         )}
 
         <div className={s.row}>
-          {locked ? (
-            <span />
-          ) : waitS > 0 ? (
+          {waitS > 0 ? (
             <span className={s.wait} aria-live="off">Renvoyer le code dans {formatCountdown(waitS)}</span>
           ) : (
             <button type="button" className={cx('link-btn', s.resend)} onClick={resend} disabled={resending}>
@@ -179,6 +181,7 @@ export function OtpVerificationPage() {
             'Vérifier et créer mon compte'
           )}
         </button>
+        {USE_MOCKS && <div className={s.demo}>Démo : tout code sauf {MOCK_INVALID_CODE} est accepté.</div>}
       </form>
     </main>
   );
