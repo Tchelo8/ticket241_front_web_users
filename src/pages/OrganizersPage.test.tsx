@@ -1,8 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { organizersMock } from '../api/organizers';
-import { DEMO_USER } from '../api/client';
+import { DEMO_USER, mockConfig, resetMockServer } from '../api/mockServer';
 import { useAuth } from '../store/auth';
 import { renderRoute } from '../test/utils';
 import { OrganizersPage } from './OrganizersPage';
@@ -14,8 +13,8 @@ const renderOrgs = (url = '/organisateurs') =>
   renderRoute('/organisateurs', <OrganizersPage />, url, [{ path: '/connexion', element: <p>Connexion</p> }]);
 
 beforeEach(() => {
-  organizersMock.latency = 0;
-  organizersMock.failNext = false;
+  resetMockServer();
+  mockConfig.latencyFactor = 0;
   useAuth.setState({ user: DEMO_USER });
 });
 
@@ -60,7 +59,8 @@ describe('Annuaire des organisateurs', () => {
 
 describe('Bouton Suivre', () => {
   it('bascule immédiatement (mise à jour optimiste)', async () => {
-    organizersMock.latency = 50;
+    // Réponse du serveur retardée : on observe l'état avant qu'elle arrive.
+    mockConfig.latencyFactor = 0.4;
     const user = userEvent.setup();
     renderOrgs();
     const card = (await screen.findByRole('article', { name: 'Le Code Bar' }));
@@ -79,7 +79,7 @@ describe('Bouton Suivre', () => {
     renderOrgs();
     const card = await screen.findByRole('article', { name: 'Institut Français du Gabon' });
     const button = await within(card).findByRole('button', { name: 'Ne plus suivre Institut Français du Gabon' });
-    organizersMock.failNext = true;
+    mockConfig.failNextFollow = true;
     await user.click(button);
     await waitFor(() =>
       expect(within(card).getByRole('button', { name: 'Ne plus suivre Institut Français du Gabon' })).toHaveAttribute('aria-pressed', 'true'),

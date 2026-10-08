@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { SignupDraft } from '../api/auth.types';
+import type { SignupDraft } from '../api/types';
 
 type Fields = Omit<SignupDraft, 'password'>;
 

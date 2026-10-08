@@ -17,9 +17,26 @@ npm run build      # vérification TypeScript + build de production
 npm test           # tests Vitest + Testing Library
 ```
 
-Par défaut, l'app tourne sur les **données de démonstration** (`src/mocks/`).
-Pour brancher l'API : `VITE_USE_MOCKS=false VITE_API_URL=https://… npm run dev`
-(les appels sont regroupés dans `src/api/client.ts`).
+Par défaut, l'app tourne sur les **données de démonstration**.
+Pour brancher l'API, copiez `.env.example` en `.env` et renseignez :
+
+```bash
+VITE_API_URL=https://api.ticket241.ga/v1   # → API_BASE_URL
+VITE_USE_MOCKS=false
+```
+
+### Service API
+
+Tous les appels au serveur passent par **`src/api/apiService.ts`** :
+
+- `API_BASE_URL` : l'adresse centrale de l'API, utilisée par chaque appel ;
+- `ENDPOINTS` : toutes les routes au même endroit ;
+- `request()` : la seule fonction qui appelle `fetch` (cookie de session, JSON, erreurs `ApiError`) ;
+- `apiService` : les opérations par domaine — `apiService.events.list()`, `apiService.payments.create(…)`,
+  `apiService.signup.verify(…)`, `apiService.organizers.follow(…)`…
+
+`src/api/mockServer.ts` implémente le même contrat (`ApiService`, dans `src/api/types.ts`) pour la démonstration,
+et `src/api/hooks.ts` expose les hooks TanStack Query construits sur `apiService`.
 
 En démonstration, n'importe quel numéro (8 chiffres minimum) et mot de passe permettent de se connecter ;
 un paiement est confirmé environ 5 s après la demande.
@@ -33,7 +50,7 @@ un paiement est confirmé environ 5 s après la demande.
 | `src/components/` | `SiteHeader`, `NavLink`, `CityMenu`, `ThemeSwitch`, `Dateline`, `SectionHeader`, `EventCard`, `FeatureCard`, `TrendRow`, `FavButton`, `Chip`, `RemovableChip`, `Toggle`, `QtyStepper`, `TextField`, `PaymentMethodCard`, `PayButton`, `UssdWaiting`, `TicketCard`, `EmptyState`, `CornerMarks` |
 | `src/pages/` | Un écran par route |
 | `src/store/` | État global Zustand : thème, ville, favoris (localStorage), panier (sessionStorage), paiement, session |
-| `src/api/` | Accès aux données + hooks TanStack Query (statut de paiement interrogé toutes les 3 s) |
+| `src/api/` | `apiService.ts` (transmission, `API_BASE_URL`), `mockServer.ts` (démo), `types.ts`, `hooks.ts` (TanStack Query) |
 | `src/mocks/` | Les neuf événements, les villes, les billets, les organisateurs et la FAQ de démonstration |
 | `src/content/` | Conditions de vente et politique de confidentialité (texte de démonstration, à faire valider par un juriste) |
 | `src/config/support.ts` | Coordonnées du support (numéro WhatsApp à renseigner) |

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, ShieldCheck, Trash, User, WarningCircle } from '@phosphor-icons/react';
 import { useEvent } from '../api/hooks';
-import { createPayment } from '../api/client';
+import { apiService } from '../api/apiService';
 import { DoubleRule } from '../components/DoubleRule';
 import { PaymentMethodCard } from '../components/PaymentMethodCard';
 import { PayButton, type PayButtonState } from '../components/PayButton';
@@ -52,7 +52,7 @@ export function CheckoutPage() {
     if (!canPay || !cart || busy) return;
     setPayment({ stage: 'busy', error: undefined });
     try {
-      const intent = await createPayment({
+      const intent = await apiService.payments.create({
         eventId: cart.eventId, std: cart.std, vip: cart.vip, method, name: buyer.name.trim(), phone: buyer.phone.trim(), amount: total,
       });
       setPayment({

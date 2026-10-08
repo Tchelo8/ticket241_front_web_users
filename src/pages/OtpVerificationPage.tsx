@@ -1,14 +1,14 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { ArrowClockwise, ArrowLeft, WarningCircle } from '@phosphor-icons/react';
-import { OtpError, signupApi, type OtpErrorCode } from '../api/auth';
+import { apiService, OtpError, type OtpErrorCode } from '../api/apiService';
 import { OtpInput } from '../components/OtpInput';
 import { useAuth } from '../store/auth';
 import { useSignup } from '../store/signup';
 import { formatCountdown } from '../lib/format';
 import { cx } from '../lib/cx';
 import { USE_MOCKS } from '../lib/clock';
-import { MOCK_INVALID_CODE } from '../api/auth.mock';
+import { MOCK_INVALID_CODE } from '../api/mockServer';
 import s from './OtpVerificationPage.module.css';
 
 export const CODE_LENGTH = 4;
@@ -72,7 +72,7 @@ export function OtpVerificationPage() {
     setError(null);
     setInfo('');
     try {
-      const user = await signupApi.verify(fields.phone, code);
+      const user = await apiService.signup.verify(fields.phone, code);
       signIn(user);
       const target = retour;
       finish();
@@ -95,7 +95,7 @@ export function OtpVerificationPage() {
     if (waitS > 0 || resending) return;
     setResending(true);
     try {
-      await signupApi.resend(fields.phone);
+      await apiService.signup.resend(fields.phone);
       setCode('');
       // Un nouveau code lève aussi le blocage « trop de tentatives ».
       setError(null);

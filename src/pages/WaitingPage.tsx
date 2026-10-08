@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { DeviceMobile } from '@phosphor-icons/react';
-import { cancelPayment, resendPayment } from '../api/client';
+import { apiService } from '../api/apiService';
 import { usePaymentStatus } from '../api/hooks';
 import { UssdWaiting } from '../components/UssdWaiting';
 import { useCart } from '../store/cart';
@@ -61,7 +61,7 @@ export function WaitingPage() {
     if (resendIn > 0 || resending || !payment.txId) return;
     setResending(true);
     try {
-      const intent = await resendPayment(payment.txId);
+      const intent = await apiService.payments.resend(payment.txId);
       setPayment({ expiresAt: intent.expiresAt });
       setSentAt(Date.now());
       setLeft(secondsLeft(intent.expiresAt));
@@ -71,7 +71,7 @@ export function WaitingPage() {
   };
 
   const cancel = async () => {
-    if (payment.txId) await cancelPayment(payment.txId);
+    if (payment.txId) await apiService.payments.cancel(payment.txId);
     resetPayment();
     navigate('/paiement', { replace: true });
   };

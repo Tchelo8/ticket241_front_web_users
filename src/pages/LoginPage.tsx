@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeSlash, LockKey, UserPlus } from '@phosphor-icons/react';
-import { login } from '../api/client';
+import { apiService } from '../api/apiService';
 import { TextField } from '../components/TextField';
 import { useAuth } from '../store/auth';
 import s from './AuthPages.module.css';
@@ -26,7 +26,7 @@ export function LoginPage() {
     setBusy(true);
     setError('');
     try {
-      signIn(await login(phone.trim(), pwd));
+      signIn(await apiService.auth.login(phone.trim(), pwd));
       navigate(retour, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connexion impossible.');

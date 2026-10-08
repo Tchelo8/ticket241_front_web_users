@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alarm, Bell, CaretDown, DeviceMobile, EnvelopeSimple, LockSimple, MapPin, PaintBrush, SignOut, User } from '@phosphor-icons/react';
-import { logout } from '../api/client';
+import { apiService } from '../api/apiService';
 import { useTickets } from '../api/hooks';
 import { DoubleRule } from '../components/DoubleRule';
 import { TextField } from '../components/TextField';
@@ -41,7 +41,7 @@ export function ProfilePage() {
   };
 
   const doLogout = async () => {
-    await logout();
+    await apiService.auth.logout();
     signOut();
     setBuyer({ name: '', phone: '' });
     navigate('/connexion', { replace: true });

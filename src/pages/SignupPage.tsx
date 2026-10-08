@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, EnvelopeSimple, LockKey } from '@phosphor-icons/react';
-import { signupApi } from '../api/auth';
+import { apiService } from '../api/apiService';
 import { Logo } from '../components/Logo';
 import { TextField } from '../components/TextField';
 import { useSignup } from '../store/signup';
@@ -44,7 +44,7 @@ export function SignupPage() {
     const clean = { firstName: f.firstName.trim(), lastName: f.lastName.trim(), email: f.email.trim(), phone: f.phone.trim() };
     try {
       // POST /auth/signup/start : le code part par SMS, le compte sera créé après vérification.
-      await signupApi.start({ ...clean, password: f.password });
+      await apiService.signup.start({ ...clean, password: f.password });
       setFields(clean);
       begin(safeReturn(params.get('retour')));
       navigate('/inscription/verification');

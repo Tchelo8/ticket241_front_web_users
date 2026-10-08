@@ -2,8 +2,8 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OtpError, signupApi } from '../api/auth';
-import { mockLatency, mockSignupApi, resetMockSignup } from '../api/auth.mock';
+import { apiService, OtpError } from '../api/apiService';
+import { mockConfig, resetMockServer } from '../api/mockServer';
 import { useAuth } from '../store/auth';
 import { useSignup } from '../store/signup';
 import { OtpVerificationPage } from './OtpVerificationPage';
@@ -12,7 +12,7 @@ const PHONE = '074 12 34 56';
 const DRAFT = { firstName: 'Alida', lastName: 'Nzé Mba', email: 'alida.nze@example.ga', phone: PHONE };
 
 async function startSignup(retour = '/') {
-  await mockSignupApi.start({ ...DRAFT, password: 'Motdepasse1' });
+  await apiService.signup.start({ ...DRAFT, password: 'Motdepasse1' });
   useSignup.setState({ fields: DRAFT, password: '', pending: true, retour });
 }
 
@@ -34,8 +34,8 @@ const cells = () => Array.from(screen.getByTestId('otp-cells').children).map((c)
 const submitButton = () => screen.getByRole('button', { name: /Vérifier et créer mon compte|Vérification/ });
 
 beforeEach(() => {
-  mockLatency.ms = 0;
-  resetMockSignup();
+  resetMockServer();
+  mockConfig.latencyFactor = 0;
   useAuth.setState({ user: null });
   useSignup.setState({ fields: { firstName: '', lastName: '', email: '', phone: '' }, password: '', pending: false, retour: '/' });
 });
@@ -122,8 +122,8 @@ describe('OtpVerificationPage', () => {
 
   it('affiche l’état de chargement pendant la vérification', async () => {
     await startSignup();
-    let resolve!: (v: Awaited<ReturnType<typeof signupApi.verify>>) => void;
-    vi.spyOn(signupApi, 'verify').mockReturnValue(new Promise((r) => { resolve = r; }));
+    let resolve!: (v: Awaited<ReturnType<typeof apiService.signup.verify>>) => void;
+    vi.spyOn(apiService.signup, 'verify').mockReturnValue(new Promise((r) => { resolve = r; }));
     const user = userEvent.setup();
     renderPage();
 
@@ -137,7 +137,7 @@ describe('OtpVerificationPage', () => {
   it('décompte le renvoi à la seconde puis relance 30 s', async () => {
     await startSignup();
     vi.useFakeTimers({ shouldAdvanceTime: false });
-    const resend = vi.spyOn(signupApi, 'resend');
+    const resend = vi.spyOn(apiService.signup, 'resend');
     renderPage();
 
     expect(screen.getByText('Renvoyer le code dans 0:30')).toBeInTheDocument();
@@ -156,7 +156,7 @@ describe('OtpVerificationPage', () => {
 
   it('rend le renvoi disponible immédiatement si le code a expiré', async () => {
     await startSignup();
-    vi.spyOn(signupApi, 'verify').mockRejectedValue(new OtpError('expired'));
+    vi.spyOn(apiService.signup, 'verify').mockRejectedValue(new OtpError('expired'));
     const user = userEvent.setup();
     renderPage();
 
@@ -168,7 +168,7 @@ describe('OtpVerificationPage', () => {
 
   it('bloque la saisie après trop de tentatives', async () => {
     await startSignup();
-    vi.spyOn(signupApi, 'verify').mockRejectedValue(new OtpError('too_many'));
+    vi.spyOn(apiService.signup, 'verify').mockRejectedValue(new OtpError('too_many'));
     const user = userEvent.setup();
     renderPage();
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Buildings } from '@phosphor-icons/react';
-import { useFollowing, useOrganizers, useToggleFollow } from '../api/organizers';
+import { useFollowing, useOrganizers, useToggleFollow } from '../api/hooks';
 import { FilterChip } from '../components/Chip';
 import { OrganizerCard } from '../components/OrganizerCard';
 import { PageDateline } from '../components/PageDateline';
