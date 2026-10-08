@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, EnvelopeSimple, LockKey } from '@phosphor-icons/react';
-import { signup } from '../api/client';
+import { signupApi } from '../api/auth';
 import { Logo } from '../components/Logo';
 import { TextField } from '../components/TextField';
-import { useAuth } from '../store/auth';
+import { useSignup } from '../store/signup';
 import { phoneDigits } from '../lib/format';
 import { safeReturn } from './LoginPage';
 import s from './AuthPages.module.css';
@@ -23,11 +23,14 @@ const STRENGTH = [
 export function SignupPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const signIn = useAuth((st) => st.signIn);
-  const [f, setF] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '' });
+  // Champs conservés dans le store d'inscription : on les retrouve en revenant de la vérification.
+  const { fields, password, setFields, setPassword, begin } = useSignup();
+  const f = { ...fields, password };
   const [terms, setTerms] = useState(false);
   const [busy, setBusy] = useState(false);
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF((v) => ({ ...v, [k]: e.target.value }));
+  const [error, setError] = useState('');
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    k === 'password' ? setPassword(e.target.value) : setFields({ [k]: e.target.value });
 
   const score = passwordScore(f.password);
   const strength = STRENGTH[score];
@@ -37,9 +40,16 @@ export function SignupPage() {
     e.preventDefault();
     if (!ok || busy) return;
     setBusy(true);
+    setError('');
+    const clean = { firstName: f.firstName.trim(), lastName: f.lastName.trim(), email: f.email.trim(), phone: f.phone.trim() };
     try {
-      signIn(await signup({ ...f, firstName: f.firstName.trim(), lastName: f.lastName.trim(), email: f.email.trim(), phone: f.phone.trim() }));
-      navigate(safeReturn(params.get('retour')), { replace: true });
+      // POST /auth/signup/start : le code part par SMS, le compte sera créé après vérification.
+      await signupApi.start({ ...clean, password: f.password });
+      setFields(clean);
+      begin(safeReturn(params.get('retour')));
+      navigate('/inscription/verification');
+    } catch {
+      setError("L'envoi du code n'a pas abouti. Vérifiez votre connexion et réessayez.");
     } finally {
       setBusy(false);
     }
@@ -85,8 +95,9 @@ export function SignupPage() {
           <span>J'accepte les conditions d'utilisation et la politique de confidentialité de Ticket241.</span>
         </label>
         <button type="submit" className={`btn btn--primary btn--block ${s.submit} ${s.submit22}`} aria-disabled={!ok || undefined}>
-          {busy ? 'Création…' : 'Créer mon compte'}
+          {busy ? 'Envoi du code…' : 'Créer mon compte'}
         </button>
+        {error && <div className={s.error} role="alert">{error}</div>}
       </form>
       <div className={s.already}>Déjà un compte ? <Link to="/connexion">Se connecter</Link></div>
     </main>

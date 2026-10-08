@@ -1,0 +1,22 @@
+.root { position: relative; }
+.cells { display: grid; grid-template-columns: repeat(var(--len), 1fr); gap: 12px; border-radius: 4px; }
+.root:has(.input:focus-visible) .cells { outline: 2px solid var(--acc); outline-offset: 4px; }
+.cell {
+  height: 78px; display: flex; align-items: center; justify-content: center;
+  background: var(--card); border: 1.5px solid var(--line2); border-radius: 4px; box-shadow: var(--sh);
+  font: 600 32px var(--font); font-variant-numeric: tabular-nums; color: var(--ink);
+  transition: border-color .2s, color .2s;
+}
+.pending { border-color: var(--acc); }
+.error .cell { border-color: var(--acc2); color: var(--acc2); }
+.disabled .cell { background: var(--surf); color: var(--ink3); box-shadow: none; }
+/* Un seul champ, transparent, posé sur les cases : frappe, collage et remplissage SMS. */
+.input {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: none;
+  background: transparent; color: transparent; caret-color: transparent; outline: none;
+  font-size: 32px; letter-spacing: 1em; text-indent: -9999px; cursor: text;
+  -webkit-text-fill-color: transparent;
+}
+.input:focus-visible { outline: none; }
+.input:disabled { cursor: not-allowed; }
+.input::selection { background: transparent; }

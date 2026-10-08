@@ -165,14 +165,6 @@ export const login = async (phone: string, password: string): Promise<User> => {
   return { ...DEMO_USER, phone };
 };
 
-export const signup = async (u: User & { password: string }): Promise<User> => {
-  if (!USE_MOCKS) return http('/auth/signup', { method: 'POST', body: JSON.stringify(u) });
-  await wait(600);
-  const { password: _password, ...user } = u;
-  void _password;
-  return user;
-};
-
 export const logout = async () => {
   if (!USE_MOCKS) await http('/auth/logout', { method: 'POST' });
 };

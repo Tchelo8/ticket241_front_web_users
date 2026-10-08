@@ -17,6 +17,7 @@ const TicketsPage = lazy(() => import('./pages/TicketsPage').then((m) => ({ defa
 const TicketPage = lazy(() => import('./pages/TicketPage').then((m) => ({ default: m.TicketPage })));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })));
+const OtpVerificationPage = lazy(() => import('./pages/OtpVerificationPage').then((m) => ({ default: m.OtpVerificationPage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then((m) => ({ default: m.SignupPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
@@ -69,6 +70,7 @@ export function App() {
           <Route path="/favoris" element={<FavoritesPage />} />
           <Route path="/connexion" element={<LoginPage />} />
           <Route path="/inscription" element={<SignupPage />} />
+          <Route path="/inscription/verification" element={<OtpVerificationPage />} />
           <Route path="/profil" element={<RequireAuth><ProfilePage /></RequireAuth>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

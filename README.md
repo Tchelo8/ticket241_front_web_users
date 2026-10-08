@@ -14,6 +14,7 @@ Vite · React 18 · TypeScript · React Router · CSS Modules (jetons en variabl
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # vérification TypeScript + build de production
+npm test           # tests Vitest + Testing Library
 ```
 
 Par défaut, l'app tourne sur les **données de démonstration** (`src/mocks/`).
@@ -22,6 +23,7 @@ Pour brancher l'API : `VITE_USE_MOCKS=false VITE_API_URL=https://… npm run dev
 
 En démonstration, n'importe quel numéro (8 chiffres minimum) et mot de passe permettent de se connecter ;
 un paiement est confirmé environ 5 s après la demande.
+À l'inscription, le code SMS « 0000 » est refusé ; tout autre code à 4 chiffres est accepté.
 
 ## Organisation
 
@@ -38,6 +40,6 @@ un paiement est confirmé environ 5 s après la demande.
 
 `/` · `/explorer` (filtres dans l'URL : `?cat=Concert&max=10000&quand=Septembre&tri=prix&remb=1&q=jazz`) ·
 `/evenements/:id` · `/paiement` → `/paiement/attente` → `/paiement/confirme` · `/billets` (`?onglet=passes`) ·
-`/billets/:ref` · `/favoris` · `/connexion` · `/inscription` · `/profil`.
+`/billets/:ref` · `/favoris` · `/connexion` · `/inscription` → `/inscription/verification` · `/profil`.
 
 Les routes de paiement, de billets et le profil redirigent vers `/connexion?retour=…` si l'utilisateur n'est pas connecté.
