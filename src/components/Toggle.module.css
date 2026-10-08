@@ -1,0 +1,14 @@
+.track {
+  width: 46px; height: 26px; flex: none; border-radius: 99px; padding: 3px; background: var(--line2);
+  transition: background .25s; display: inline-block;
+}
+.knob {
+  display: block; width: 20px; height: 20px; border-radius: 50%; background: #fdfdfc; box-shadow: var(--sh);
+  transition: transform .25s var(--ease);
+}
+.on { background: var(--acc); }
+.on .knob { transform: translateX(20px); }
+.row {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
+  border: none; background: none; padding: 0; text-align: left; color: var(--ink);
+}

@@ -1,0 +1,14 @@
+.search {
+  margin-top: 24px; width: 100%; max-width: 640px; display: flex; align-items: center; gap: 12px; height: 54px;
+  padding: 0 20px; border-radius: 99px; border: 1px solid var(--line2); background: var(--card); color: var(--ink3);
+  box-shadow: var(--sh); text-decoration: none; font: 400 16px var(--font);
+}
+.search:hover { color: var(--ink2); border-color: var(--ink3); }
+.searchIcon { color: var(--ink2); flex: none; }
+.section { margin-top: 48px; }
+.first { margin-top: 36px; }
+.feature { display: flex; gap: 20px; flex-wrap: wrap; }
+.side { flex: 1 1 300px; display: flex; flex-direction: column; gap: 20px; }
+.trend { display: flex; align-items: center; gap: 5px; font: 500 12.5px var(--font); color: var(--acc2); }
+.trendGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); column-gap: 40px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 20px; }

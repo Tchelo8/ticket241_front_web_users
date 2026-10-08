@@ -1,0 +1,10 @@
+.btn {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(32, 30, 29, .10);
+  background: #fdfdfc; box-shadow: 0 2px 6px rgba(20, 19, 18, .26);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #2d2b2b;
+  transition: transform .2s var(--ease);
+}
+.btn:hover { transform: scale(1.06); }
+.on { color: var(--acc); }
+.lg { width: 38px; height: 38px; top: 12px; right: 12px; }

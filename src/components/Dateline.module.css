@@ -1,0 +1,5 @@
+.row {
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 8px 0;
+  font: 600 10.5px var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--ink2);
+}
+.thin { height: 1px; background: var(--ink); }

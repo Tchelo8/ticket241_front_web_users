@@ -1,0 +1,5 @@
+.mark { position: absolute; width: 14px; height: 14px; border: 0 solid var(--line2); pointer-events: none; }
+.tl { top: 10px; left: 10px; border-left-width: 1.5px; border-top-width: 1.5px; }
+.tr { top: 10px; right: 10px; border-right-width: 1.5px; border-top-width: 1.5px; }
+.bl { bottom: 10px; left: 10px; border-left-width: 1.5px; border-bottom-width: 1.5px; }
+.br { bottom: 10px; right: 10px; border-right-width: 1.5px; border-bottom-width: 1.5px; }

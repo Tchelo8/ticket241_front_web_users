@@ -1,0 +1,27 @@
+.card {
+  display: flex; flex-wrap: wrap; background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: var(--sh); overflow: hidden;
+}
+.past { opacity: .72; }
+.main { flex: 3 1 380px; display: flex; gap: 16px; padding: 18px; align-items: center; min-width: 0; }
+.thumb { width: 92px; height: 92px; flex: none; border-radius: 5px; object-fit: cover; }
+.info { min-width: 0; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 99px; font: 600 10px var(--font); letter-spacing: .13em;
+  text-transform: uppercase; background: var(--accs); color: var(--acc);
+}
+.past .badge { background: var(--surf); color: var(--ink2); }
+.name { margin-top: 9px; font: 600 20px/1.16 var(--font); letter-spacing: -.02em; }
+.when { margin-top: 5px; font: 400 14px var(--font); color: var(--ink2); }
+.stub {
+  flex: 1 1 220px; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 18px;
+  border-left: 1.5px dashed var(--line2);
+}
+.pills { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pill { padding: 5px 10px; border-radius: 99px; background: var(--surf); font: 500 12px var(--font); color: var(--ink2); }
+.ref { padding: 5px 0; font: 400 12px var(--font); color: var(--ink3); font-variant-numeric: tabular-nums; }
+.action {
+  display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 4px; border: none;
+  background: var(--accs); color: var(--acc); font: 600 14px var(--font); cursor: pointer; text-decoration: none;
+}
+.action:hover { color: var(--acc-pressed); background: color-mix(in oklch, var(--acc) 20%, transparent); }

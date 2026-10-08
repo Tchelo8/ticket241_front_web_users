@@ -1,0 +1,31 @@
+.field { min-width: 0; }
+.label { display: block; margin-bottom: 7px; font: 500 13px var(--font); color: var(--ink2); }
+.caps { margin-bottom: 8px; font: 600 10.5px var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+.box {
+  display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 15px; border-radius: 4px;
+  background: var(--card); border: 1px solid var(--line2); box-shadow: var(--sh); transition: border-color .2s;
+}
+.box:focus-within { border-color: var(--acc); }
+.h54 { height: 54px; gap: 11px; }
+.h56 { height: 56px; gap: 12px; padding: 0 16px; }
+.error, .error:focus-within { border-color: var(--acc2); }
+.locked { background: var(--surf); }
+.icon { color: var(--ink3); flex: none; }
+.prefix { font: 600 15px var(--font); color: var(--ink2); flex: none; }
+.h56 .prefix { font-size: 16px; }
+.sep { width: 1px; height: 22px; background: var(--line); flex: none; }
+.input {
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+  font: 400 15.5px var(--font); color: var(--ink);
+}
+.h54 .input { font-size: 16px; }
+.h56 .input { font-size: 16.5px; }
+.input::placeholder { color: var(--ink3); }
+.input:focus-visible { outline: none; }
+.tabular { font-variant-numeric: tabular-nums; }
+.trailing {
+  border: none; background: none; padding: 0; color: var(--ink3); cursor: pointer; display: flex; flex: none;
+}
+.trailing:hover { color: var(--ink); }
+.hint { margin-top: 7px; font: 400 12.5px var(--font); color: var(--ink3); }
+.errorText { margin-top: 7px; font: 400 12.5px var(--font); color: var(--acc2); }

@@ -1,0 +1,13 @@
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: 99px; cursor: pointer;
+  font: 500 14px var(--font); transition: all .2s;
+  background: var(--card); color: var(--ink2); border: 1px solid var(--line2);
+}
+.chip:hover { color: var(--ink); border-color: var(--ink3); }
+.sm { padding: 8px 13px; font-size: 13px; }
+.active, .active:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.removable {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 12px; border-radius: 99px; cursor: pointer;
+  border: 1px solid var(--acc); background: var(--accs); color: var(--acc); font: 500 12.5px var(--font);
+}
+.removable:hover { color: var(--acc-pressed); }

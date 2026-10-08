@@ -1,0 +1,38 @@
+.top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.avatar {
+  width: 84px; height: 84px; flex: none; border-radius: 50%; background: var(--accs); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; font: 600 28px var(--font); color: var(--acc);
+}
+.who { flex: 1 1 240px; }
+.name { font: 600 clamp(28px, 3.4vw, 38px) var(--font); letter-spacing: -.028em; }
+.phone { margin-top: 4px; font: 400 15px var(--font); color: var(--ink3); font-variant-numeric: tabular-nums; }
+.stats { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { padding: 12px 22px; text-align: center; border-left: 1px solid var(--line); }
+.statN { font: 700 26px/1 var(--font); letter-spacing: -.024em; font-variant-numeric: tabular-nums; }
+.statL { margin-top: 5px; font: 500 10px var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+.cols { display: flex; gap: clamp(24px, 4vw, 48px); flex-wrap: wrap; align-items: flex-start; margin-top: 28px; }
+.colMain { flex: 3 1 420px; min-width: 0; }
+.colSide { flex: 2 1 300px; min-width: 0; }
+.h2 { font: 600 22px var(--font); letter-spacing: -.02em; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin-top: 16px; }
+.select {
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent; font: 400 15.5px var(--font); color: var(--ink);
+  appearance: none; cursor: pointer;
+}
+.selectLabel { display: block; margin-bottom: 8px; font: 600 10.5px var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+.selectBox {
+  display: flex; align-items: center; gap: 11px; height: 52px; padding: 0 15px; border-radius: 4px;
+  background: var(--card); border: 1px solid var(--line2); box-shadow: var(--sh);
+}
+.selectBox:focus-within { border-color: var(--acc); }
+.selectBox svg { color: var(--ink3); flex: none; }
+.note { margin-top: 14px; font: 400 13px/1.5 var(--font); color: var(--ink3); }
+.save { margin-top: 18px; height: 50px; padding: 0 24px; font-size: 15.5px; }
+.saved { margin-left: 12px; font: 500 13.5px var(--font); color: var(--acc); }
+.prefs { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--sh); overflow: hidden; }
+.pref { display: flex; align-items: center; gap: 12px; padding: 15px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pref:last-child { border-bottom: none; }
+.pref > svg, .prefRow svg { color: var(--acc); flex: none; }
+.prefLabel { flex: 1; font: 500 15px var(--font); }
+.prefRow { display: flex; align-items: center; gap: 12px; flex: 1; }
+.logout { margin-top: 18px; height: 50px; }

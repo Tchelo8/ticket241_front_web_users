@@ -1,0 +1,26 @@
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--glass); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.inner {
+  max-width: 1240px; margin: 0 auto; padding: 12px var(--gutter);
+  display: flex; align-items: center; gap: clamp(12px, 2.4vw, 28px); flex-wrap: wrap;
+}
+.logo { display: flex; align-items: center; flex: none; }
+.nav {
+  display: flex; gap: 4px; flex: 1 1 380px; overflow-x: auto; scrollbar-width: none; margin: 0 -6px; min-width: 0;
+}
+.nav::-webkit-scrollbar { display: none; }
+.avatar {
+  width: 40px; height: 40px; flex: none; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--accs); color: var(--acc); font: 600 14px var(--font);
+  display: flex; align-items: center; justify-content: center; text-decoration: none;
+}
+.avatar:hover { color: var(--acc-pressed); }
+.login {
+  height: 40px; padding: 0 18px; border-radius: 4px; flex: none;
+  display: inline-flex; align-items: center;
+  background: var(--acc); color: var(--on-acc); font: 600 14.5px var(--font); text-decoration: none;
+}
+.login:hover { background: var(--acc-pressed); color: var(--on-acc); }

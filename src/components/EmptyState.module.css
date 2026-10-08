@@ -1,0 +1,17 @@
+.root {
+  display: flex; gap: clamp(24px, 4vw, 48px); flex-wrap: wrap; align-items: center; margin-top: 32px;
+  animation: var(--kf-rise) .5s var(--ease) both;
+}
+.frame {
+  flex: 1 1 300px; position: relative; border: 1px solid var(--line2); border-radius: 8px; background: var(--surf);
+  padding: 40px 0 26px; text-align: center;
+}
+.icon { display: inline-block; animation: var(--kf-bob) 3.6s ease-in-out infinite; }
+.caption {
+  margin-top: 14px; font: 600 9.5px var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--ink3);
+}
+.text { flex: 1 1 300px; }
+.title { font: 600 clamp(28px, 3vw, 36px)/1.08 var(--font); letter-spacing: -.026em; }
+.italic { display: block; font-style: italic; font-weight: 400; color: var(--ink2); }
+.body { margin-top: 12px; font: 400 16.5px/1.5 var(--font); color: var(--ink2); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }

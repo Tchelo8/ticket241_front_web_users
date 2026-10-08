@@ -1,0 +1,43 @@
+/* Jetons de design Ticket241 — identiques au mobile. */
+:root[data-theme="paper"] {
+  --bg: #f3f2f2; --card: #fdfdfc; --surf: #eae9e9;
+  --ink: #201e1d; --ink2: #605d5d; --ink3: #9b9797;
+  --line: rgba(32, 30, 29, .13); --line2: rgba(32, 30, 29, .26);
+  --acc: #0088b0; --acc-pressed: #006786; --accs: #e4f4fb;
+  --acc2: #d6006c; --acc2s: #ffeef4; --on-acc: #fff;
+  --img-filter: none; --glass: rgba(243, 242, 242, .85);
+  --sh: 0 1px 2px rgba(45, 43, 43, .10);
+  --shm: 0 4px 14px rgba(45, 43, 43, .11);
+  --shl: 0 14px 38px rgba(45, 43, 43, .16);
+  color-scheme: light;
+}
+:root[data-theme="ink"] {
+  --bg: #1b1a19; --card: #262423; --surf: #302e2c;
+  --ink: #f5f3f1; --ink2: #bab6b6; --ink3: #8a8685;
+  --line: rgba(243, 242, 242, .14); --line2: rgba(243, 242, 242, .28);
+  --acc: #62c5ee; --acc-pressed: #99e0ff; --accs: rgba(98, 197, 238, .15);
+  --acc2: #ff90b1; --acc2s: rgba(255, 144, 177, .15); --on-acc: #11201f;
+  --img-filter: brightness(.92) saturate(.95); --glass: rgba(27, 26, 25, .85);
+  --sh: 0 1px 2px rgba(0, 0, 0, .5); --shm: 0 6px 18px rgba(0, 0, 0, .5); --shl: 0 16px 40px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+:root[data-theme="mono"] {
+  --bg: #f4f3f2; --card: #fff; --surf: #e9e7e5;
+  --ink: #141312; --ink2: #5c5957; --ink3: #96918e;
+  --line: rgba(20, 19, 18, .18); --line2: rgba(20, 19, 18, .4);
+  --acc: #141312; --acc-pressed: #000; --accs: #e6e3e0;
+  --acc2: #4a4644; --acc2s: #e6e3e0; --on-acc: #fff;
+  --img-filter: grayscale(1) contrast(1.12); --glass: rgba(244, 243, 242, .88);
+  --sh: 0 1px 2px rgba(0, 0, 0, .10); --shm: 0 4px 14px rgba(0, 0, 0, .12); --shl: 0 14px 38px rgba(0, 0, 0, .16);
+  color-scheme: light;
+}
+
+:root {
+  --font: "Source Serif 4", Georgia, serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --gutter: clamp(16px, 4vw, 40px);
+  --header-offset: 96px;
+  /* Noms des @keyframes globaux, lisibles depuis les CSS Modules sans être renommés. */
+  --kf-rise: rise; --kf-fade: fade; --kf-pop: pop; --kf-pulse: pulse; --kf-spin: spin;
+  --kf-bob: bob; --kf-sweep: sweep; --kf-ring: ring; --kf-drop: drop;
+}

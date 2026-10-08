@@ -1,0 +1,8 @@
+.link {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 10px; font: 400 15px var(--font); color: var(--ink2); text-decoration: none;
+}
+.link:hover { color: var(--ink); }
+.bar { width: 18px; height: 2px; border-radius: 2px; background: transparent; transition: background .25s; }
+.active, .active:hover { color: var(--acc); font-weight: 600; }
+.active .bar { background: var(--acc); }

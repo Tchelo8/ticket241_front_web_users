@@ -1,0 +1,62 @@
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.steps { display: flex; align-items: center; gap: 10px; font: 400 13px var(--font); color: var(--ink3); }
+.bars { display: flex; gap: 4px; }
+.bar { width: 24px; height: 3px; border-radius: 3px; background: var(--line2); }
+.barOn { background: var(--acc); }
+.alert {
+  margin-top: 20px; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 6px;
+  border: 1px solid var(--acc2); background: var(--acc2s); color: var(--ink); font: 400 14px/1.5 var(--font);
+}
+.alert svg { flex: none; color: var(--acc2); }
+.layout { display: flex; gap: clamp(24px, 4vw, 48px); flex-wrap: wrap; align-items: flex-start; margin-top: 28px; }
+.form { flex: 3 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 32px; }
+.h2 { font: 600 11px var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--ink3); }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin-top: 14px; }
+.fieldsHint { margin-top: 8px; font: 400 12.5px var(--font); color: var(--ink3); }
+.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; margin-top: 14px; }
+.refund { padding: 16px; border-radius: 6px; border: 1px solid var(--line2); display: flex; gap: 12px; }
+.refund svg { flex: none; color: var(--acc); }
+.refundTitle { font: 600 15px var(--font); }
+.refundText { margin-top: 5px; font: 400 13.5px/1.5 var(--font); color: var(--ink2); }
+.summary {
+  flex: 2 1 340px; max-width: 100%; position: sticky; top: var(--header-offset);
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shm); overflow: hidden;
+}
+.ev { display: flex; gap: 14px; align-items: center; padding: 18px; border-bottom: 1px solid var(--line); }
+.ev img { width: 72px; height: 72px; flex: none; border-radius: 5px; object-fit: cover; }
+.evName { font: 600 17px/1.18 var(--font); letter-spacing: -.018em; }
+.evDate { margin-top: 5px; font: 400 12.5px var(--font); color: var(--ink2); }
+.evVenue { margin-top: 2px; font: 400 12.5px var(--font); color: var(--ink3); }
+.lines { padding: 6px 18px 0; }
+.line { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.lineName { font: 600 14.5px var(--font); }
+.lineUnit { margin-top: 2px; font: 400 12px var(--font); color: var(--ink3); font-variant-numeric: tabular-nums; }
+.trash {
+  width: 28px; height: 28px; flex: none; border: none; background: none; color: var(--ink3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; border-radius: 50%;
+}
+.trash:hover { color: var(--acc2); }
+.emptyCart { padding: 16px 0; font: 400 13.5px var(--font); color: var(--ink3); }
+.emptyCart a { font-weight: 600; }
+.totals { padding: 14px 18px 18px; }
+.priceRow { display: flex; justify-content: space-between; padding: 4px 0; }
+.priceLabel { font: 400 14px var(--font); color: var(--ink2); }
+.priceValue { font: 500 14px var(--font); font-variant-numeric: tabular-nums; }
+.discount { color: var(--acc); }
+.totalRule { height: 1px; background: var(--line2); margin: 10px 0; }
+.total { display: flex; justify-content: space-between; align-items: baseline; }
+.totalLabel { font: 600 16px var(--font); }
+.totalValue { font: 600 26px var(--font); letter-spacing: -.024em; font-variant-numeric: tabular-nums; }
+.terms {
+  margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer;
+  font: 400 13px/1.45 var(--font); color: var(--ink2);
+}
+.terms input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.box {
+  width: 20px; height: 20px; flex: none; border-radius: 3px; display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line2); background: transparent; color: transparent; transition: all .2s;
+}
+.terms input:checked + .box { border-color: var(--acc); background: var(--acc); color: var(--on-acc); }
+.terms input:focus-visible + .box { outline: 2px solid var(--acc); outline-offset: 2px; }
+.pay { margin-top: 16px; }
+.payHint { margin-top: 9px; text-align: center; font: 400 12px var(--font); color: var(--ink3); }

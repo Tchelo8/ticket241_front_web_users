@@ -1,0 +1,21 @@
+.row {
+  position: relative; display: flex; align-items: center; gap: 16px; padding: 16px 0;
+  border-bottom: 1px solid var(--line); cursor: pointer;
+}
+.row:hover .name { color: var(--acc); }
+.rank {
+  width: 30px; flex: none; font: 700 28px/1 var(--font); letter-spacing: -.03em; color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+.thumb { width: 64px; height: 64px; flex: none; border-radius: 4px; object-fit: cover; }
+.body { flex: 1; min-width: 0; }
+.name {
+  font: 600 17px/1.2 var(--font); letter-spacing: -.014em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: color .2s;
+}
+.link { color: inherit; text-decoration: none; }
+.link:hover { color: inherit; }
+.link::after { content: ""; position: absolute; inset: 0; }
+.meta { margin-top: 4px; font: 400 13px var(--font); color: var(--ink3); }
+.trend { color: var(--acc2); font-weight: 600; }
+.price { flex: none; font: 600 14.5px var(--font); font-variant-numeric: tabular-nums; }

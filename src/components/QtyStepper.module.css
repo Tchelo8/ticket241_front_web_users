@@ -1,0 +1,14 @@
+.root { display: flex; align-items: center; gap: 10px; flex: none; }
+.btn {
+  width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.minus { border: 1px solid var(--line2); background: transparent; color: var(--ink); }
+.minus:hover { background: color-mix(in oklch, var(--acc) 8%, transparent); }
+.plus { border: none; background: var(--acc); color: var(--on-acc); }
+.plus:hover { background: var(--acc-pressed); }
+.btn:disabled { cursor: not-allowed; opacity: .45; }
+.value { min-width: 16px; text-align: center; font: 600 18px var(--font); font-variant-numeric: tabular-nums; }
+.compact { gap: 8px; }
+.compact .btn { width: 28px; height: 28px; }
+.compact .value { min-width: 14px; font-size: 15px; }

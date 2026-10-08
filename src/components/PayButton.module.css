@@ -1,0 +1,16 @@
+.btn {
+  width: 100%; height: 56px; border: none; border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font: 600 16.5px var(--font); transition: all .2s;
+  background: var(--acc); color: var(--on-acc); box-shadow: var(--shm);
+}
+.btn:hover { background: var(--acc-pressed); }
+.disabled, .disabled:hover { background: var(--surf); color: var(--ink3); box-shadow: none; cursor: not-allowed; }
+.loading { cursor: progress; }
+.label { display: flex; align-items: center; gap: 9px; }
+.spinner {
+  width: 18px; height: 18px; border-radius: 50%; display: inline-block; flex: none;
+  border: 2.5px solid rgba(255, 255, 255, .35); border-top-color: #fff;
+  animation: var(--kf-spin) .8s linear infinite;
+}
+:global([data-theme="ink"]) .spinner { border-color: rgba(17, 32, 31, .3); border-top-color: var(--on-acc); }

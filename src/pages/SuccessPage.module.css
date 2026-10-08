@@ -1,0 +1,22 @@
+.main { max-width: 640px; margin: 0 auto; padding: clamp(36px, 6vw, 64px) var(--gutter) 40px; }
+.frame {
+  position: relative; border: 1px solid var(--line2); border-radius: 8px; background: var(--surf); padding: 30px 0 24px;
+  text-align: center; animation: var(--kf-rise) .5s var(--ease) both;
+}
+.seal { display: inline-block; animation: var(--kf-pop) .6s var(--ease) both; }
+.caption { margin-top: 10px; font: 600 9.5px var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--ink3); }
+.title { margin-top: 28px; font: 600 clamp(32px, 4vw, 44px)/1.04 var(--font); letter-spacing: -.03em; }
+.lead { margin-top: 12px; font: 400 17px/1.5 var(--font); color: var(--ink2); }
+.ticket { margin-top: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--sh); overflow: hidden; }
+.ticketTop { display: flex; gap: 14px; padding: 16px; align-items: center; }
+.ticketTop img { width: 68px; height: 68px; flex: none; border-radius: 4px; object-fit: cover; }
+.kicker { font: 600 10px var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--acc); }
+.name { margin-top: 5px; font: 600 18px/1.16 var(--font); letter-spacing: -.018em; }
+.meta { margin-top: 4px; font: 400 13px var(--font); color: var(--ink2); }
+.ticketBottom {
+  border-top: 1px dashed var(--line2); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.ref { font: 500 13px var(--font); color: var(--ink3); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+.qr { font-weight: 600; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.actions > * { flex: 1 1 200px; height: 54px; }
