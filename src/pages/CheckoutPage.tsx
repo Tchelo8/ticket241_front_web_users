@@ -38,7 +38,7 @@ export function CheckoutPage() {
   }, []);
 
   const count = cartCount(cart);
-  const sub = ev && cart ? subtotal(ev, cart) : 0;
+  const sub = ev && cart ? subtotal(ev, cart.lines) : 0;
   const disc = discount(sub);
   const total = sub - disc + SERVICE_FEE;
   const nameOk = buyer.name.trim().length > 2;
@@ -53,7 +53,9 @@ export function CheckoutPage() {
     setPayment({ stage: 'busy', error: undefined });
     try {
       const intent = await apiService.payments.create({
-        eventId: cart.eventId, std: cart.std, vip: cart.vip, method, name: buyer.name.trim(), phone: buyer.phone.trim(), amount: total,
+        eventId: cart.eventId,
+        items: Object.entries(cart.lines).filter(([, q]) => q > 0).map(([ticketTypeId, quantity]) => ({ ticketTypeId, quantity })),
+        method, name: buyer.name.trim(), phone: buyer.phone.trim(), amount: total,
       });
       setPayment({
         stage: 'waiting', txId: intent.txId, expiresAt: intent.expiresAt, amount: total,
@@ -66,7 +68,9 @@ export function CheckoutPage() {
   };
 
   const lines = ev && cart
-    ? (['std', 'vip'] as const).filter((k) => cart[k] > 0).map((k) => ({ k, name: ev.ticketTypes.find((t) => t.id === k)!.name, unit: ticketPrice(ev, k), qty: cart[k] }))
+    ? ev.ticketTypes
+        .filter((t) => (cart.lines[t.id] ?? 0) > 0)
+        .map((t) => ({ k: t.id, name: t.name, unit: ticketPrice(ev, t.id), qty: cart.lines[t.id] }))
     : [];
 
   return (

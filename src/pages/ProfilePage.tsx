@@ -2,12 +2,11 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alarm, Bell, CaretDown, DeviceMobile, EnvelopeSimple, LockSimple, MapPin, PaintBrush, SignOut, User } from '@phosphor-icons/react';
 import { apiService } from '../api/apiService';
-import { useTickets } from '../api/hooks';
+import { useCities, useTickets } from '../api/hooks';
 import { DoubleRule } from '../components/DoubleRule';
 import { TextField } from '../components/TextField';
 import { ThemeSwitch } from '../components/ThemeSwitch';
 import { Toggle } from '../components/Toggle';
-import { CITIES } from '../mocks/events';
 import { fullName, useAuth } from '../store/auth';
 import { useCheckout } from '../store/checkout';
 import { usePrefs } from '../store/prefs';
@@ -22,6 +21,7 @@ export function ProfilePage() {
   const setBuyer = useCheckout((st) => st.setBuyer);
   const { city, setCity, favIds, alerts, setAlert } = usePrefs();
   const { data: tickets = [] } = useTickets();
+  const { data: cities = [] } = useCities();
   const [name, setName] = useState(fullName(user));
   const [email, setEmail] = useState(user.email);
   const [saved, setSaved] = useState(false);
@@ -94,7 +94,8 @@ export function ProfilePage() {
                 <div className={s.selectBox}>
                   <MapPin size={18} />
                   <select id="pref-city" className={s.select} value={city} onChange={(e) => setCity(e.target.value)}>
-                    {CITIES.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+                    {!cities.some((c) => c.name === city) && <option value={city}>{city}</option>}
+                    {cities.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                   <CaretDown size={14} />
                 </div>

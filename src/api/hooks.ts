@@ -6,8 +6,12 @@ import { apiService } from './apiService';
 
 export const useEvents = () => useQuery({ queryKey: ['events'], queryFn: () => apiService.events.list(), staleTime: 60_000 });
 
+/** Détail d'un événement : chaque appel compte une vue côté serveur, on le garde 5 min. */
 export const useEvent = (id: string | undefined) =>
-  useQuery({ queryKey: ['event', id], queryFn: () => apiService.events.get(id!), enabled: !!id, staleTime: 60_000 });
+  useQuery({ queryKey: ['event', id], queryFn: () => apiService.events.get(id!), enabled: !!id, staleTime: 5 * 60_000 });
+
+export const useCities = () =>
+  useQuery({ queryKey: ['cities'], queryFn: () => apiService.cities.list(), staleTime: 10 * 60_000 });
 
 export const useTickets = () => useQuery({ queryKey: ['tickets'], queryFn: () => apiService.tickets.list() });
 

@@ -7,7 +7,7 @@ import { useAuth } from '../store/auth';
 import { useSignup } from '../store/signup';
 import { formatCountdown } from '../lib/format';
 import { cx } from '../lib/cx';
-import { USE_MOCKS } from '../lib/clock';
+import { isLive } from '../lib/apiMode';
 import { MOCK_INVALID_CODE } from '../api/mockServer';
 import s from './OtpVerificationPage.module.css';
 
@@ -181,7 +181,7 @@ export function OtpVerificationPage() {
             'Vérifier et créer mon compte'
           )}
         </button>
-        {USE_MOCKS && <div className={s.demo}>Démo : tout code sauf {MOCK_INVALID_CODE} est accepté.</div>}
+        {!isLive('signup') && <div className={s.demo}>Démo : tout code sauf {MOCK_INVALID_CODE} est accepté.</div>}
       </form>
     </main>
   );

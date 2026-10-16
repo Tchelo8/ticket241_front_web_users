@@ -11,7 +11,7 @@ import { usePrefs } from '../store/prefs';
 import {
   fcfa, fcfaShort, formatLongDate, formatLongDateYear, formatShortDate, formatTime, fromPrice, groupNumber, plural,
 } from '../lib/format';
-import { subtotal } from '../lib/events';
+import { saleClosedReason, subtotal } from '../lib/events';
 import { cx } from '../lib/cx';
 import { NotFoundPage } from './NotFoundPage';
 import { Loading } from './Loading';
@@ -33,7 +33,7 @@ export function EventPage() {
   const fav = usePrefs((st) => (id ? st.favIds.includes(id) : false));
   const toggleFav = usePrefs((st) => st.toggleFav);
 
-  const [qty, setQty] = useState({ std: 0, vip: 0 });
+  const [qty, setQty] = useState<Record<string, number>>({});
   const [aboutOpen, setAboutOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [following, setFollowing] = useState(false);
@@ -41,7 +41,7 @@ export function EventPage() {
 
   // Reprend le panier en cours s'il concerne cet événement.
   useEffect(() => {
-    setQty(cart && cart.eventId === id ? { std: cart.std, vip: cart.vip } : { std: 0, vip: 0 });
+    setQty(cart && cart.eventId === id ? cart.lines : {});
     setAboutOpen(false);
     setInfoOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,8 +56,11 @@ export function EventPage() {
   if (isLoading) return <Loading />;
   if (isError || !ev) return <NotFoundPage />;
 
-  const count = qty.std + qty.vip;
-  const sub = subtotal(ev, qty);
+  // Seules les catégories encore proposées comptent (le panier repris peut être ancien).
+  const lines = Object.fromEntries(ev.ticketTypes.map((t) => [t.id, qty[t.id] ?? 0]));
+  const count = Object.values(lines).reduce((n, q) => n + q, 0);
+  const sub = subtotal(ev, lines);
+  const closed = saleClosedReason(ev);
   const longAbout = ev.description.length > ABOUT_LIMIT;
   const about = aboutOpen || !longAbout ? ev.description : ev.description.slice(0, ABOUT_LIMIT).trim() + '…';
   const similar = all.filter((x) => x.id !== ev.id && x.category === ev.category).slice(0, 3);
@@ -75,7 +78,7 @@ export function EventPage() {
       ? [
           { Icon: DoorOpen, label: 'Ouverture des portes', value: formatTime(ev.doorsAt) },
           { Icon: Signpost, label: 'Adresse', value: `${ev.address}, ${ev.city}` },
-          { Icon: ArrowUUpLeft, label: 'Remboursement', value: "Jusqu'à 2 jours avant l'événement" },
+          { Icon: ArrowUUpLeft, label: 'Remboursement', value: ev.refundable ? "Jusqu'à 2 jours avant l'événement" : 'Non remboursable' },
           { Icon: UsersThree, label: 'Âge minimum', value: ev.minAge },
           { Icon: IdentificationBadge, label: 'Organisateur', value: ev.organizer.name },
         ]
@@ -96,8 +99,8 @@ export function EventPage() {
   };
 
   const reserve = () => {
-    if (!count) return;
-    setCart({ eventId: ev.id, ...qty });
+    if (!count || closed) return;
+    setCart({ eventId: ev.id, lines });
     navigate('/paiement');
   };
 
@@ -204,16 +207,21 @@ export function EventPage() {
           <div className="overline">Billets</div>
           <div className={s.boxFrom}>{fromPrice(ev.priceFrom)}</div>
           <div className={s.types}>
-            {ev.ticketTypes.map((t) => (
-              <div key={t.id} className={cx(s.type, qty[t.id] > 0 && s.typeOn)}>
-                <div className={s.typeText}>
-                  <div className={s.typeName}>{t.name}</div>
-                  <div className={s.typePrice}>{fcfa(t.price)}</div>
-                  <div className={s.typeNote}>{t.note}</div>
+            {ev.ticketTypes.map((t) => {
+              const max = Math.min(t.maxPerOrder ?? 10, t.available ?? Infinity);
+              return (
+                <div key={t.id} className={cx(s.type, lines[t.id] > 0 && s.typeOn)}>
+                  <div className={s.typeText}>
+                    <div className={s.typeName}>{t.name}</div>
+                    <div className={s.typePrice}>{fcfa(t.price)}</div>
+                    <div className={s.typeNote}>{t.available === 0 ? 'Épuisé' : t.note}</div>
+                  </div>
+                  {!closed && max > 0 && (
+                    <QtyStepper label={t.name} value={lines[t.id]} max={max} onChange={(v) => setQty((q) => ({ ...q, [t.id]: v }))} />
+                  )}
                 </div>
-                <QtyStepper label={t.name} value={qty[t.id]} onChange={(v) => setQty((q) => ({ ...q, [t.id]: v }))} />
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className={s.sub}>
             <span className={s.subLabel}>Sous-total</span>
@@ -222,15 +230,17 @@ export function EventPage() {
           <button
             type="button"
             className={cx('btn btn--primary btn--block', s.buy)}
-            aria-disabled={!count || undefined}
+            aria-disabled={!count || !!closed || undefined}
             onClick={reserve}
           >
-            {count ? `Réserver · ${plural(count, 'billet')}` : 'Choisir un billet'}
+            {closed ?? (count ? `Réserver · ${plural(count, 'billet')}` : 'Choisir un billet')}
           </button>
-          <div className={s.note}>
-            <ShieldCheck size={19} />
-            Annulation gratuite jusqu'à 48 h avant l'événement. Remboursement intégral.
-          </div>
+          {ev.refundable && (
+            <div className={s.note}>
+              <ShieldCheck size={19} />
+              Annulation gratuite jusqu'à 48 h avant l'événement. Remboursement intégral.
+            </div>
+          )}
         </aside>
       </div>
 

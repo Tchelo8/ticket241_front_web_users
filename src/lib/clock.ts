@@ -3,15 +3,15 @@
  *
  * Les données de démonstration (copiées du prototype) sont datées de fin août à fin
  * octobre 2026 : on les juge « passées » par rapport à une date fixe pour garder le
- * même rendu que la maquette. Une fois l'API branchée (VITE_USE_MOCKS=false), on
- * utilise la vraie date du jour.
+ * même rendu que la maquette. Une fois les événements branchés sur l'API réelle,
+ * on utilise la vraie date du jour.
  */
-export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
+import { isLive } from './apiMode';
 
 const MOCK_NOW = '2026-08-31T12:00:00+01:00';
 
 /** Date utilisée pour classer les événements passés / à venir. */
-export const referenceNow = () => (USE_MOCKS ? new Date(MOCK_NOW) : new Date());
+export const referenceNow = () => (isLive('events') ? new Date() : new Date(MOCK_NOW));
 
 /** Date affichée dans la Dateline : toujours la date du jour. */
 export const today = () => new Date();

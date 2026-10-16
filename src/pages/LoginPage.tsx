@@ -1,13 +1,23 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeSlash, LockKey, UserPlus } from '@phosphor-icons/react';
-import { apiService } from '../api/apiService';
+import { ApiError, apiService } from '../api/apiService';
 import { TextField } from '../components/TextField';
 import { useAuth } from '../store/auth';
 import s from './AuthPages.module.css';
 
 /** N'accepte que les chemins internes pour éviter les redirections ouvertes. */
 export const safeReturn = (r: string | null) => (r && r.startsWith('/') && !r.startsWith('//') ? r : '/');
+
+/** Message affiché sous le formulaire selon la réponse de l'auth-service. */
+export const loginErrorMessage = (err: unknown): string => {
+  if (!(err instanceof ApiError)) return 'Connexion impossible. Vérifiez votre connexion internet et réessayez.';
+  if (err.fields) return '';
+  if (err.status === 401) return err.serverMessage ?? 'Numéro de téléphone ou mot de passe incorrect';
+  // Le message du serveur cite une route d'API : on le reformule pour l'utilisateur.
+  if (err.status === 403) return "Votre compte n'est pas encore vérifié. Saisissez le code reçu par e-mail pour l'activer.";
+  return 'Une erreur est survenue, réessayez plus tard.';
+};
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -18,18 +28,28 @@ export function LoginPage() {
   const [pwd, setPwd] = useState('');
   const [shown, setShown] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ phone?: string; password?: string }>({});
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
-    setBusy(true);
     setError('');
+    // Mêmes règles que le serveur : on évite l'aller-retour pour un champ vide.
+    const missing = {
+      phone: phone.trim() ? undefined : 'Le numéro de téléphone est requis',
+      password: pwd ? undefined : 'Le mot de passe est requis',
+    };
+    setFieldErrors(missing);
+    if (missing.phone || missing.password) return;
+    setBusy(true);
     try {
-      signIn(await apiService.auth.login(phone.trim(), pwd));
+      const { user, token } = await apiService.auth.login(phone.trim(), pwd);
+      signIn(user, token);
       navigate(retour, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Connexion impossible.');
+      setError(loginErrorMessage(err));
+      if (err instanceof ApiError && err.fields) setFieldErrors(err.fields);
     } finally {
       setBusy(false);
     }
@@ -61,7 +81,7 @@ export function LoginPage() {
           onChange={(e) => setPhone(e.target.value)}
           placeholder="074 12 34 56"
           autoComplete="username"
-          error={!!error}
+          error={fieldErrors.phone || !!error}
         />
         <TextField
           className={s.mt16}
@@ -74,7 +94,7 @@ export function LoginPage() {
           onChange={(e) => setPwd(e.target.value)}
           placeholder="Votre mot de passe"
           autoComplete="current-password"
-          error={error || undefined}
+          error={fieldErrors.password || error || undefined}
           trailing={
             <button type="button" className={s.eye} aria-label={shown ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} onClick={() => setShown((v) => !v)}>
               {shown ? <EyeSlash size={19} /> : <Eye size={19} />}

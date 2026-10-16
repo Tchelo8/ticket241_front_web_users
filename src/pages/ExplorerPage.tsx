@@ -71,7 +71,8 @@ export function ExplorerPage() {
       .filter((e) =>
         (cat === 'Tous' || e.category === cat) &&
         (!needle || [e.name, e.venue, e.city].some((t) => t.toLowerCase().includes(needle))) &&
-        e.priceFrom <= max &&
+        // Curseur au maximum = pas de limite de budget.
+        (max >= PRICE_MAX || e.priceFrom <= max) &&
         (month === null || monthOf(e.startsAt) === month) &&
         (!refundable || e.refundable) &&
         (!orgId || e.organizer.id === orgId),

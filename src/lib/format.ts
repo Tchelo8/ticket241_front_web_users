@@ -53,3 +53,6 @@ export const formatCountdown = (seconds: number) => {
 
 /** Numéro local : garde les chiffres. */
 export const phoneDigits = (s: string) => s.replace(/\D/g, '');
+
+/** Numéro renvoyé par l'API → saisie locale (le champ affiche déjà le préfixe +241). */
+export const fromIntlPhone = (s: string) => s.replace(/^\+?241\s*/, '');

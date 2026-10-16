@@ -8,11 +8,11 @@
  * - code SMS : « 0000 » est refusé (5e échec : trop de tentatives), tout autre code réussit ;
  *   un code expire au bout de 10 minutes ; un renvoi remet les essais à zéro.
  */
-import { EVENTS } from '../mocks/events';
+import { CITIES, EVENTS } from '../mocks/events';
 import { ORGANIZERS, SEED_FOLLOWED } from '../mocks/organizers';
 import { SEED_TICKETS } from '../mocks/tickets';
 import type { Ticket, User } from '../types';
-import { OtpError, type ApiService, type PaymentRequest, type SignupDraft } from './types';
+import { ApiError, OtpError, type ApiService, type PaymentRequest, type SignupDraft } from './types';
 
 /** Réglages du faux serveur (modifiables dans les tests). */
 export const mockConfig = {
@@ -89,8 +89,15 @@ export const mockApi: ApiService = {
     async get(id) {
       await wait(80);
       const ev = EVENTS.find((e) => e.id === id);
-      if (!ev) throw new Error('Événement introuvable');
+      if (!ev) throw new ApiError(404, undefined, { message: 'Événement introuvable' });
       return ev;
+    },
+  },
+
+  cities: {
+    async list() {
+      await wait(80);
+      return CITIES;
     },
   },
 
@@ -124,8 +131,11 @@ export const mockApi: ApiService = {
       const now = Date.now();
       if (now - tx.createdAt >= CONFIRM_AFTER_MS) {
         const ref = randomRef();
-        const typeName = [tx.std > 0 && 'Standard', tx.vip > 0 && 'Carré VIP'].filter(Boolean).join(' + ');
-        const ticket: Ticket = { ref, eventId: tx.eventId, typeName, quantity: tx.std + tx.vip, paid: tx.amount, method: tx.method };
+        const types = EVENTS.find((e) => e.id === tx.eventId)?.ticketTypes ?? [];
+        const bought = tx.items.filter((i) => i.quantity > 0);
+        const typeName = bought.map((i) => types.find((t) => t.id === i.ticketTypeId)?.name ?? 'Billet').join(' + ');
+        const quantity = bought.reduce((n, i) => n + i.quantity, 0);
+        const ticket: Ticket = { ref, eventId: tx.eventId, typeName, quantity, paid: tx.amount, method: tx.method };
         write(localStorage, TICKETS_KEY, [ticket, ...storedTickets()]);
         all[txId] = { ...tx, ticketRef: ref };
         write(sessionStorage, TX_KEY, all);
@@ -154,8 +164,10 @@ export const mockApi: ApiService = {
   auth: {
     async login(phone, password) {
       await wait(500);
-      if (phoneKey(phone).length < 8 || password.length < 1) throw new Error('Numéro ou mot de passe incorrect.');
-      return { ...DEMO_USER, phone };
+      if (phoneKey(phone).length < 8 || password.length < 1) {
+        throw new ApiError(401, undefined, { status: 401, message: 'Numéro de téléphone ou mot de passe incorrect' });
+      }
+      return { user: { ...DEMO_USER, phone }, token: null };
     },
     async logout() {},
   },

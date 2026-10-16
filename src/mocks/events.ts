@@ -1,4 +1,5 @@
-import type { Category, City, Event, TicketType } from '../types';
+import type { City, Event, TicketType } from '../types';
+import { referenceNow } from '../lib/clock';
 
 /** Pass Carré VIP = Standard × 2,4 arrondi au demi-millier. */
 export const vipPrice = (std: number) => Math.round((std * 2.4) / 500) * 500;
@@ -8,7 +9,7 @@ const types = (price: number): TicketType[] => [
   { id: 'vip', name: 'Pass Carré VIP', price: vipPrice(price), note: 'Placement assis + boisson' },
 ];
 
-type Raw = Omit<Event, 'ticketTypes' | 'refundable'>;
+type Raw = Omit<Event, 'ticketTypes' | 'refundable' | 'saleOpen' | 'cancelled'>;
 
 const RAW: Raw[] = [
   {
@@ -85,34 +86,29 @@ const RAW: Raw[] = [
   },
 ];
 
+/** Mise en avant de l'accueil (identique au prototype) : à la une, puis vues pour les tendances. */
+const FEATURED = ['jazz', 'ogooue', 'pantheres'];
+const VIEWS: Record<string, number> = { ogooue: 4210, jazz: 3870, diaspora: 2950, pantheres: 2410 };
+
 export const EVENTS: Event[] = RAW.map((e) => ({
   ...e,
   ticketTypes: types(e.priceFrom),
   // Règle du prototype : les billets à partir de 5 000 FCFA sont remboursables sous 48 h.
   refundable: e.priceFrom >= 5000,
+  saleOpen: e.seatsLeft > 0 && new Date(e.startsAt).getTime() > referenceNow().getTime(),
+  cancelled: false,
+  featured: FEATURED.includes(e.id),
+  views: VIEWS[e.id] ?? 800,
 }));
 
 export const CITIES: City[] = [
-  { name: 'Libreville', region: 'Estuaire', count: 24 },
-  { name: 'Port-Gentil', region: 'Ogooué-Maritime', count: 11 },
-  { name: 'Franceville', region: 'Haut-Ogooué', count: 7 },
-  { name: 'Oyem', region: 'Woleu-Ntem', count: 4 },
-  { name: 'Lambaréné', region: 'Moyen-Ogooué', count: 3 },
-  { name: 'Moanda', region: 'Haut-Ogooué', count: 2 },
-  { name: 'Tchibanga', region: 'Nyanga', count: 2 },
+  { id: '1', name: 'Libreville', region: 'Estuaire' },
+  { id: '2', name: 'Port-Gentil', region: 'Ogooué-Maritime' },
+  { id: '3', name: 'Franceville', region: 'Haut-Ogooué' },
+  { id: '4', name: 'Oyem', region: 'Woleu-Ntem' },
+  { id: '5', name: 'Lambaréné', region: 'Moyen-Ogooué' },
+  { id: '6', name: 'Moanda', region: 'Haut-Ogooué' },
+  { id: '7', name: 'Tchibanga', region: 'Nyanga' },
 ];
 
-export const CATEGORIES: ('Tous' | Category)[] = ['Tous', 'Concert', 'Sport', 'Festival', 'Théâtre', 'Exposition'];
-
-/** Mise en avant de l'accueil (identique au prototype). */
-export const HOME_LAYOUT = {
-  featured: 'jazz',
-  side: ['ogooue', 'pantheres'],
-  trending: [
-    { id: 'ogooue', trend: '+186 %' },
-    { id: 'jazz', trend: '+124 %' },
-    { id: 'diaspora', trend: '+97 %' },
-    { id: 'pantheres', trend: '+61 %' },
-  ],
-  thisWeek: ['sibang', 'ogooue', 'nuitblanche', 'basket'],
-};
+export const CATEGORIES = ['Tous', 'Concert', 'Sport', 'Festival', 'Théâtre', 'Exposition'];
