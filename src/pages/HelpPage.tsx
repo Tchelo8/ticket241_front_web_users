@@ -7,7 +7,7 @@ import { Accordion, AccordionItem } from '../components/Accordion';
 import { FilterChip } from '../components/Chip';
 import { PageDateline } from '../components/PageDateline';
 import { SearchPill } from '../components/SearchPill';
-import { FAQ, FAQ_DEFAULT_OPEN, FAQ_THEMES, type FaqEntry, type FaqTheme } from '../mocks/faq';
+import { FAQ, FAQ_DEFAULT_OPEN, FAQ_THEMES, type FaqEntry, type FaqTheme } from '../content/faq';
 import { SUPPORT, whatsappUrl } from '../config/support';
 import { cx } from '../lib/cx';
 import s from './HelpPage.module.css';

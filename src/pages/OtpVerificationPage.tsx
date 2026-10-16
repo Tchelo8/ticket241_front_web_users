@@ -7,17 +7,16 @@ import { useAuth } from '../store/auth';
 import { useSignup } from '../store/signup';
 import { formatCountdown } from '../lib/format';
 import { cx } from '../lib/cx';
-import { isLive } from '../lib/apiMode';
-import { MOCK_INVALID_CODE } from '../api/mockServer';
 import s from './OtpVerificationPage.module.css';
 
-export const CODE_LENGTH = 4;
+/** Code envoyé par e-mail par notification-service : 6 chiffres. */
+export const CODE_LENGTH = 6;
 export const RESEND_DELAY_S = 30;
 
 type ErrorKind = OtpErrorCode | 'network';
 
 const MESSAGES: Record<ErrorKind, string> = {
-  invalid: 'Code incorrect. Vérifiez le SMS et réessayez.',
+  invalid: 'Code incorrect. Vérifiez l’e-mail reçu et réessayez.',
   expired: 'Ce code a expiré. Demandez-en un nouveau.',
   too_many: 'Trop de tentatives. Réessayez dans quelques minutes.',
   network: "La vérification n'a pas abouti. Vérifiez votre connexion et réessayez.",
@@ -30,12 +29,17 @@ export function OtpVerificationPage() {
   const inputId = useId();
   const errorId = inputId + '-err';
   const containerRef = useRef<HTMLFormElement>(null);
+  // Vérification réussie : la navigation (transition React Router) peut arriver après la fin de
+  // l'inscription ; on ne doit alors plus renvoyer vers le formulaire
+  const leavingRef = useRef(false);
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<ErrorKind | null>(null);
   const [busy, setBusy] = useState(false);
   const [resending, setResending] = useState(false);
   const [info, setInfo] = useState('');
+  // Message précis du serveur (tentatives restantes…), affiché à la place du message générique
+  const [serverMessage, setServerMessage] = useState('');
   const [resendAt, setResendAt] = useState(() => Date.now() + RESEND_DELAY_S * 1000);
   const [now, setNow] = useState(() => Date.now());
 
@@ -50,7 +54,7 @@ export function OtpVerificationPage() {
     return () => clearInterval(t);
   }, [resendAt]);
 
-  if (!pending) return <Navigate to="/inscription" replace />;
+  if (!pending) return leavingRef.current ? null : <Navigate to="/inscription" replace />;
 
   const locked = error === 'too_many';
   const complete = code.length === CODE_LENGTH;
@@ -62,6 +66,7 @@ export function OtpVerificationPage() {
   const change = (digits: string) => {
     setCode(digits);
     if (error && error !== 'too_many') setError(null);
+    setServerMessage('');
     setInfo('');
   };
 
@@ -72,14 +77,17 @@ export function OtpVerificationPage() {
     setError(null);
     setInfo('');
     try {
-      const user = await apiService.signup.verify(fields.phone, code);
-      signIn(user);
-      const target = retour;
+      const session = await apiService.signup.verify(fields.phone, code);
+      signIn(session.user, session.token);
+      // Naviguer AVANT de clore l'inscription : sinon la page se réaffiche sans inscription
+      // en cours et renvoie vers le formulaire au lieu de la page d'origine
+      leavingRef.current = true;
+      navigate(retour, { replace: true });
       finish();
-      navigate(target, { replace: true });
     } catch (err) {
       const kind: ErrorKind = err instanceof OtpError ? err.code : 'network';
       setError(kind);
+      setServerMessage(err instanceof OtpError ? err.serverMessage ?? '' : '');
       // Code expiré ou trop de tentatives : renvoi forcé, disponible immédiatement.
       if (kind === 'expired' || kind === 'too_many') {
         setResendAt(Date.now());
@@ -99,6 +107,7 @@ export function OtpVerificationPage() {
       setCode('');
       // Un nouveau code lève aussi le blocage « trop de tentatives ».
       setError(null);
+      setServerMessage('');
       setInfo('Un nouveau code vient de vous être envoyé.');
       const t = Date.now();
       setResendAt(t + RESEND_DELAY_S * 1000);
@@ -129,11 +138,11 @@ export function OtpVerificationPage() {
       <div className={s.kicker}>Vérification</div>
       <h1 className={s.title}>Le code, s'il vous plaît.</h1>
       <p className={s.lead}>
-        Envoyé par SMS au <b>+241 {fields.phone}</b>. Il expire dans 10 minutes.
+        Envoyé par e-mail à <b>{fields.email}</b>. Il expire dans quelques minutes.
       </p>
 
       <form ref={containerRef} onSubmit={submit} noValidate>
-        <label htmlFor={inputId} className="sr-only">Code à quatre chiffres</label>
+        <label htmlFor={inputId} className="sr-only">Code à six chiffres</label>
         <div className={s.code}>
         <OtpInput
           id={inputId}
@@ -149,7 +158,7 @@ export function OtpVerificationPage() {
         {error && (
           <div id={errorId} className={s.error} role="alert">
             <WarningCircle size={17} />
-            <span>{MESSAGES[error]}</span>
+            <span>{serverMessage || MESSAGES[error]}</span>
           </div>
         )}
 
@@ -181,7 +190,6 @@ export function OtpVerificationPage() {
             'Vérifier et créer mon compte'
           )}
         </button>
-        {!isLive('signup') && <div className={s.demo}>Démo : tout code sauf {MOCK_INVALID_CODE} est accepté.</div>}
       </form>
     </main>
   );

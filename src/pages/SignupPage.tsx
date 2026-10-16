@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, EnvelopeSimple, LockKey } from '@phosphor-icons/react';
-import { apiService } from '../api/apiService';
+import { ApiError, apiService } from '../api/apiService';
 import { Logo } from '../components/Logo';
 import { TextField } from '../components/TextField';
 import { useSignup } from '../store/signup';
@@ -43,13 +43,16 @@ export function SignupPage() {
     setError('');
     const clean = { firstName: f.firstName.trim(), lastName: f.lastName.trim(), email: f.email.trim(), phone: f.phone.trim() };
     try {
-      // POST /auth/signup/start : le code part par SMS, le compte sera créé après vérification.
+      // POST /auth/register : le compte est créé non vérifié et le code part par e-mail.
       await apiService.signup.start({ ...clean, password: f.password });
       setFields(clean);
       begin(safeReturn(params.get('retour')));
       navigate('/inscription/verification');
-    } catch {
-      setError("L'envoi du code n'a pas abouti. Vérifiez votre connexion et réessayez.");
+    } catch (err) {
+      // 409 : numéro ou e-mail déjà utilisé (ou appartenant à un compte supprimé) ; 400 : champ refusé
+      if (err instanceof ApiError && err.fields) setError(Object.values(err.fields)[0] ?? 'Vérifiez les informations saisies.');
+      else if (err instanceof ApiError && err.serverMessage && err.status < 500) setError(err.serverMessage);
+      else setError("L'envoi du code n'a pas abouti. Vérifiez votre connexion et réessayez.");
     } finally {
       setBusy(false);
     }

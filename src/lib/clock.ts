@@ -1,19 +1,9 @@
-/**
- * Horloge de référence.
- *
- * Les données de démonstration (copiées du prototype) sont datées de fin août à fin
- * octobre 2026 : on les juge « passées » par rapport à une date fixe pour garder le
- * même rendu que la maquette. Une fois les événements branchés sur l'API réelle,
- * on utilise la vraie date du jour.
- */
-import { isLive } from './apiMode';
-
-const MOCK_NOW = '2026-08-31T12:00:00+01:00';
+/** Horloge de référence : la vraie date du jour. */
 
 /** Date utilisée pour classer les événements passés / à venir. */
-export const referenceNow = () => (isLive('events') ? new Date() : new Date(MOCK_NOW));
+export const referenceNow = () => new Date();
 
-/** Date affichée dans la Dateline : toujours la date du jour. */
+/** Date affichée dans la Dateline. */
 export const today = () => new Date();
 
 /** Nombre de jours entre maintenant et la date (arrondi au jour supérieur). */

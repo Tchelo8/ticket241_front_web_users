@@ -9,8 +9,6 @@ import { Chip, RemovableChip } from '../components/Chip';
 import { DoubleRule } from '../components/DoubleRule';
 import { EventCard } from '../components/EventCard';
 import { Toggle } from '../components/Toggle';
-import { CATEGORIES } from '../mocks/events';
-import { ORGANIZERS } from '../mocks/organizers';
 import { usePrefs } from '../store/prefs';
 import { fcfa, fcfaShort, monthOf, plural } from '../lib/format';
 import { sold } from '../lib/events';
@@ -25,10 +23,10 @@ const CAT_ICONS: Record<string, Icon> = {
 const PRICE_MIN = 2000;
 const PRICE_MAX = 20000;
 
-const WHEN_OPTS = ['Tous', 'Ce mois-ci', 'Septembre', 'Août'] as const;
+const WHEN_OPTS = ['Tous', 'Ce mois-ci', 'Le mois prochain'] as const;
 type When = (typeof WHEN_OPTS)[number];
 const whenMonth = (w: When): number | null =>
-  w === 'Ce mois-ci' ? monthOf(today()) : w === 'Septembre' ? 9 : w === 'Août' ? 8 : null;
+  w === 'Ce mois-ci' ? monthOf(today()) : w === 'Le mois prochain' ? (monthOf(today()) % 12) + 1 : null;
 
 const SORTS = [
   { id: 'date', label: 'Date · les plus proches', Icon: CalendarBlank },
@@ -41,18 +39,23 @@ export function ExplorerPage() {
   const [params, setParams] = useSearchParams();
   const { data: events = [], isLoading } = useEvents();
   const city = usePrefs((st) => st.city);
+  // Catégories présentes dans les événements de l'API
+  const categories = useMemo(
+    () => ['Tous', ...Array.from(new Set(events.map((e) => e.category).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'fr'))],
+    [events],
+  );
 
   // Filtres lus dans l'URL : ?cat=Concert&max=10000&quand=Septembre&tri=prix&remb=1&q=jazz
-  const cat = CATEGORIES.includes(params.get('cat') as never) ? (params.get('cat') as string) : 'Tous';
+  const cat = params.get('cat') && categories.includes(params.get('cat')!) ? params.get('cat')! : 'Tous';
   const maxRaw = Number(params.get('max'));
   const max = maxRaw >= PRICE_MIN && maxRaw <= PRICE_MAX ? maxRaw : PRICE_MAX;
   const when: When = WHEN_OPTS.includes(params.get('quand') as When) ? (params.get('quand') as When) : 'Tous';
   const sort: Sort = SORTS.some((o) => o.id === params.get('tri')) ? (params.get('tri') as Sort) : 'date';
   const refundable = params.get('remb') === '1';
   const q = params.get('q') ?? '';
-  // Depuis l'annuaire : ?organisateur=ifg
+  // Depuis l'annuaire : ?organisateur=<id de la structure>
   const orgId = params.get('organisateur');
-  const org = orgId ? ORGANIZERS.find((o) => o.id === orgId) : undefined;
+  const orgName = orgId ? events.find((e) => e.organizer.id === orgId)?.organizer.name : undefined;
 
   const update = (patch: Record<string, string | null>, replace = false) => {
     const next = new URLSearchParams(params);
@@ -89,7 +92,7 @@ export function ExplorerPage() {
     when !== 'Tous' && { label: when, clear: () => update({ quand: null }) },
     max < PRICE_MAX && { label: '≤ ' + fcfaShort(max), clear: () => update({ max: null }) },
     refundable && { label: 'Remboursable', clear: () => update({ remb: null }) },
-    orgId && { label: org?.name ?? orgId, clear: () => update({ organisateur: null }) },
+    orgId && { label: orgName ?? 'Organisateur', clear: () => update({ organisateur: null }) },
   ].filter(Boolean) as { label: string; clear: () => void }[];
 
   return (
@@ -113,8 +116,8 @@ export function ExplorerPage() {
         )}
       </div>
       <div className={s.cats} role="group" aria-label="Catégories">
-        {CATEGORIES.map((c) => {
-          const Ico = CAT_ICONS[c];
+        {categories.map((c) => {
+          const Ico = CAT_ICONS[c] ?? Tag;
           return (
             <Chip key={c} active={cat === c} icon={<Ico size={16} />} onClick={() => update({ cat: c === 'Tous' ? null : c })}>
               {c}

@@ -5,16 +5,17 @@ import type { Theme } from '../types';
 const systemTheme = (): Theme =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'ink' : 'paper';
 
+/**
+ * Préférences de cet appareil : thème, ville par défaut et favoris (gardés dans le navigateur ;
+ * pas encore de favoris côté serveur). Les alertes e-mail, elles, sont enregistrées par l'API.
+ */
 type Prefs = {
   theme: Theme;
   city: string;
-  /** Favoris de l'invité (l'API prend le relais une fois connecté). */
   favIds: string[];
-  alerts: { onSale: boolean; reminder: boolean; newsletter: boolean };
   setTheme: (t: Theme) => void;
   setCity: (c: string) => void;
   toggleFav: (id: string) => void;
-  setAlert: (k: keyof Prefs['alerts'], on: boolean) => void;
 };
 
 export const usePrefs = create<Prefs>()(
@@ -22,14 +23,21 @@ export const usePrefs = create<Prefs>()(
     (set) => ({
       theme: systemTheme(),
       city: 'Libreville',
-      favIds: ['jazz', 'ogooue'],
-      alerts: { onSale: true, reminder: true, newsletter: false },
+      favIds: [],
       setTheme: (theme) => set({ theme }),
       setCity: (city) => set({ city }),
       toggleFav: (id) =>
         set((s) => ({ favIds: s.favIds.includes(id) ? s.favIds.filter((x) => x !== id) : [...s.favIds, id] })),
-      setAlert: (k, on) => set((s) => ({ alerts: { ...s.alerts, [k]: on } })),
     }),
-    { name: 't241.prefs', storage: createJSONStorage(() => localStorage) },
+    {
+      name: 't241.prefs',
+      storage: createJSONStorage(() => localStorage),
+      // v0 : favoris de démonstration pré-remplis et alertes locales → on garde thème et ville seulement
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as Partial<Prefs>;
+        return { theme: p.theme ?? systemTheme(), city: p.city ?? 'Libreville', favIds: [] as string[] } as unknown as Prefs;
+      },
+    },
   ),
 );

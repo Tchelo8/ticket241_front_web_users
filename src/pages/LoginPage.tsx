@@ -15,7 +15,11 @@ export const loginErrorMessage = (err: unknown): string => {
   if (err.fields) return '';
   if (err.status === 401) return err.serverMessage ?? 'Numéro de téléphone ou mot de passe incorrect';
   // Le message du serveur cite une route d'API : on le reformule pour l'utilisateur.
-  if (err.status === 403) return "Votre compte n'est pas encore vérifié. Saisissez le code reçu par e-mail pour l'activer.";
+  if (err.status === 403) {
+    // 403 : compte suspendu ou supprimé (message du serveur, affiché tel quel), ou pas encore vérifié
+    if (err.serverMessage && /suspendu|supprim/i.test(err.serverMessage)) return err.serverMessage;
+    return "Votre compte n'est pas encore vérifié. Saisissez le code reçu par e-mail pour l'activer.";
+  }
   return 'Une erreur est survenue, réessayez plus tard.';
 };
 

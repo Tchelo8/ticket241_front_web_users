@@ -36,8 +36,3 @@ export const homeLayout = (events: Event[]) => {
     upcoming,
   };
 };
-
-/** Réduction de démonstration LBV10 : −10 %. */
-export const DISCOUNT = { code: 'LBV10', rate: 0.1 };
-export const discount = (sub: number) => Math.round(sub * DISCOUNT.rate);
-export const SERVICE_FEE = 0;

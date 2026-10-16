@@ -5,7 +5,6 @@ import type { User } from '../types';
 /**
  * Session utilisateur : profil affiché + JWT renvoyé par l'auth-service (valable 24 h,
  * sans refresh token). Le JWT part dans `Authorization: Bearer …` (voir apiService).
- * En démonstration (faux serveur), il n'y a pas de token : seul le profil est gardé.
  */
 type AuthStore = {
   user: User | null;
@@ -13,6 +12,22 @@ type AuthStore = {
   signIn: (u: User, token?: string | null) => void;
   update: (u: Partial<User>) => void;
   signOut: () => void;
+};
+
+/** Champs du JWT (lus sans vérification : seul le serveur fait foi). */
+const tokenClaims = (token: string): Record<string, unknown> | null => {
+  try {
+    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(part)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+};
+
+/** Identifiant numérique du compte (champ `uid` du JWT), utilisé par notification-service. */
+export const accountIdOf = (token: string | null): number | null => {
+  const uid = token ? tokenClaims(token)?.uid : null;
+  return typeof uid === 'number' ? uid : typeof uid === 'string' && /^\d+$/.test(uid) ? Number(uid) : null;
 };
 
 /** Date d'expiration (ms) lue dans le champ `exp` du JWT, ou null si illisible. */

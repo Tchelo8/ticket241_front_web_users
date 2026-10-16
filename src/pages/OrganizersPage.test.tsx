@@ -1,31 +1,42 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { DEMO_USER, mockConfig, resetMockServer } from '../api/mockServer';
-import { useAuth } from '../store/auth';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { apiService } from '../api/apiService';
 import { renderRoute } from '../test/utils';
-import { OrganizersPage } from './OrganizersPage';
+import type { Organizer } from '../types';
+import { OrganizersPage, matchesOrganizer } from './OrganizersPage';
 
 const location = () => screen.getByTestId('location').textContent;
 const cardNames = () => screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
 
-const renderOrgs = (url = '/organisateurs') =>
-  renderRoute('/organisateurs', <OrganizersPage />, url, [{ path: '/connexion', element: <p>Connexion</p> }]);
+const org = (id: string, name: string, type: string, city = 'Libreville', venue = ''): Organizer =>
+  ({ id, name, type, city, venue, description: '', upcomingCount: 1 });
+
+const ORGS = [
+  org('1', 'Entre Nous Bar', 'Bars & clubs', 'Libreville', 'Quartier Louis'),
+  org('2', 'Le Code Bar', 'Bars & clubs'),
+  org('3', 'LINAF', 'Sport'),
+  org('4', 'Institut Français', 'Culture', 'Port-Gentil'),
+];
+
+const renderOrgs = (url = '/organisateurs') => renderRoute('/organisateurs', <OrganizersPage />, url);
 
 beforeEach(() => {
-  resetMockServer();
-  mockConfig.latencyFactor = 0;
-  useAuth.setState({ user: DEMO_USER });
+  vi.spyOn(apiService.organizers, 'list').mockResolvedValue(ORGS);
 });
 
-describe('Annuaire des organisateurs', () => {
-  it('affiche les quatre familles et les compteurs', async () => {
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe('Annuaire des organisateurs (API)', () => {
+  it('affiche les familles venues de l’API et les compteurs', async () => {
     renderOrgs();
     expect(await screen.findByRole('heading', { name: 'Bars & clubs', level: 2 })).toBeInTheDocument();
-    expect(cardNames()).toHaveLength(12);
-    expect(screen.getByRole('button', { name: /Tous\s*12/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: /Sport\s*3/ })).toBeInTheDocument();
-    expect(await screen.findByText('12 structures · 2 suivies')).toBeInTheDocument();
+    expect(cardNames()).toHaveLength(4);
+    expect(screen.getByRole('button', { name: /Tous\s*4/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /Sport\s*1/ })).toBeInTheDocument();
+    expect(screen.getByText('4 structures')).toBeInTheDocument();
   });
 
   it('filtre par famille et synchronise l’URL', async () => {
@@ -33,64 +44,24 @@ describe('Annuaire des organisateurs', () => {
     renderOrgs();
     await user.click(await screen.findByRole('button', { name: /^Sport/ }));
     expect(location()).toBe('/organisateurs?type=Sport');
-    expect(screen.queryByRole('heading', { name: 'Bars & clubs', level: 2 })).not.toBeInTheDocument();
-    expect(cardNames()).toEqual(['LINAF', 'Fédération Gabonaise de Basket', 'Gabon Trail Collectif']);
+    expect(cardNames()).toEqual(['LINAF']);
   });
 
-  it('cherche sur le nom, le type et la ville, depuis l’URL', async () => {
-    renderOrgs('/organisateurs?q=bar');
-    await screen.findByRole('heading', { name: 'Bars & clubs', level: 2 });
-    expect(cardNames()).toEqual(['Entre Nous Bar', 'Le Code Bar', 'Le Palenqué']);
-    expect(screen.getByRole('searchbox')).toHaveValue('bar');
+  it('cherche sur le nom, le type, le lieu et la ville', () => {
+    expect(matchesOrganizer(ORGS[0], 'louis')).toBe(true);
+    expect(matchesOrganizer(ORGS[3], 'port-gentil')).toBe(true);
+    expect(matchesOrganizer(ORGS[2], 'francais')).toBe(false);
   });
 
-  it('met la recherche dans l’URL et affiche l’état vide', async () => {
-    const user = userEvent.setup();
+  it('affiche un état vide quand l’annuaire est vide', async () => {
+    vi.spyOn(apiService.organizers, 'list').mockResolvedValue([]);
     renderOrgs();
-    const search = await screen.findByRole('searchbox', { name: 'Rechercher un organisateur' });
-    await user.type(search, 'franceville');
-    expect(location()).toBe('/organisateurs?q=franceville');
-    expect(cardNames()).toEqual(['Mairie de Franceville']);
-
-    await user.type(search, 'zzz');
-    expect(screen.getByText('Aucun organisateur trouvé')).toBeInTheDocument();
+    expect(await screen.findByText("L'annuaire est encore vide")).toBeInTheDocument();
   });
-});
 
-describe('Bouton Suivre', () => {
-  it('bascule immédiatement (mise à jour optimiste)', async () => {
-    // Réponse du serveur retardée : on observe l'état avant qu'elle arrive.
-    mockConfig.latencyFactor = 0.4;
-    const user = userEvent.setup();
+  it('chaque carte mène aux événements de l’organisateur', async () => {
     renderOrgs();
-    const card = (await screen.findByRole('article', { name: 'Le Code Bar' }));
-    const button = await within(card).findByRole('button', { name: 'Suivre Le Code Bar' });
-    expect(button).toHaveAttribute('aria-pressed', 'false');
-
-    await user.click(button);
-    // Avant la réponse de l'API.
-    expect(within(card).getByRole('button', { name: 'Ne plus suivre Le Code Bar' })).toHaveTextContent('Suivi');
-    expect(location()).toBe('/organisateurs');
-    await waitFor(() => expect(screen.getByText('12 structures · 3 suivies')).toBeInTheDocument());
-  });
-
-  it('revient en arrière si l’API échoue', async () => {
-    const user = userEvent.setup();
-    renderOrgs();
-    const card = await screen.findByRole('article', { name: 'Institut Français du Gabon' });
-    const button = await within(card).findByRole('button', { name: 'Ne plus suivre Institut Français du Gabon' });
-    mockConfig.failNextFollow = true;
-    await user.click(button);
-    await waitFor(() =>
-      expect(within(card).getByRole('button', { name: 'Ne plus suivre Institut Français du Gabon' })).toHaveAttribute('aria-pressed', 'true'),
-    );
-  });
-
-  it('redirige un invité vers la connexion', async () => {
-    useAuth.setState({ user: null });
-    const user = userEvent.setup();
-    renderOrgs('/organisateurs?type=Sport');
-    await user.click(await screen.findByRole('button', { name: 'Suivre LINAF' }));
-    expect(location()).toBe('/connexion?retour=%2Forganisateurs%3Ftype%3DSport');
+    const links = await screen.findAllByRole('link', { name: /Voir/ });
+    expect(links[0]).toHaveAttribute('href', expect.stringContaining('/explorer?organisateur='));
   });
 });

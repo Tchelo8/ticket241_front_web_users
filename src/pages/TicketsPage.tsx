@@ -1,10 +1,14 @@
 import { useRef, type KeyboardEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Compass } from '@phosphor-icons/react';
+import { Compass, Key, Receipt } from '@phosphor-icons/react';
 import { useEvents, useTickets } from '../api/hooks';
 import { EmptyState } from '../components/EmptyState';
 import { TicketCard } from '../components/TicketCard';
-import { isPast } from '../lib/events';
+import { isValidTicket } from '../components/TicketPass';
+import { useAuth } from '../store/auth';
+import { useGuestOrders } from '../store/guestOrders';
+import { referenceNow } from '../lib/clock';
+import { formatShortDate } from '../lib/format';
 import { cx } from '../lib/cx';
 import ticketsAnim from '../assets/lottie/Tickets.json';
 import { Loading } from './Loading';
@@ -16,8 +20,33 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'past', label: 'Passés' },
 ];
 
+/** Commandes passées sans compte sur cet appareil (le jeton reste dans le lien). */
+function GuestOrdersSection() {
+  const orders = useGuestOrders((st) => st.orders);
+  return (
+    <section aria-labelledby="h-guest" style={{ marginTop: 32 }}>
+      <h2 className="screen-title" id="h-guest" style={{ fontSize: 22 }}>Achats sans compte</h2>
+      {orders.length > 0 ? (
+        <div className={s.list}>
+          {orders.map((o) => (
+            <Link key={o.orderId} to={`/commande/${encodeURIComponent(o.orderId)}#${o.token}`} className="btn btn--outline" style={{ justifyContent: 'flex-start' }}>
+              <Receipt size={18} />{o.eventName} · commande du {formatShortDate(o.createdAt)}
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p style={{ color: 'var(--ink2)' }}>Aucun achat sans compte sur cet appareil.</p>
+      )}
+      <Link to="/retrouver-mes-billets" className="btn btn--outline" style={{ marginTop: 12 }}>
+        <Key size={18} />Retrouver mes billets avec mon numéro
+      </Link>
+    </section>
+  );
+}
+
 export function TicketsPage() {
   const [params, setParams] = useSearchParams();
+  const user = useAuth((st) => st.user);
   const tab: Tab = params.get('onglet') === 'passes' ? 'past' : 'upcoming';
   const setTab = (t: Tab) => setParams(t === 'past' ? { onglet: 'passes' } : {}, { replace: true });
   const { data: tickets, isLoading } = useTickets();
@@ -32,14 +61,27 @@ export function TicketsPage() {
     tabRefs.current[next === 'upcoming' ? 0 : 1]?.focus();
   };
 
+  // Sans compte : seulement les commandes de cet appareil et la récupération par code
+  if (!user) {
+    return (
+      <main className="container container--sm">
+        <h1 className="screen-title">Mes billets</h1>
+        <p style={{ color: 'var(--ink2)' }}>
+          <Link to={`/connexion?retour=${encodeURIComponent('/billets')}`}>Connectez-vous</Link> pour voir les billets de votre compte.
+        </p>
+        <GuestOrdersSection />
+      </main>
+    );
+  }
+
   if (isLoading || !tickets) return <Loading />;
 
+  const now = referenceNow().getTime();
   const rows = tickets
-    .map((t) => ({ t, ev: events.find((e) => e.id === t.eventId) }))
-    .filter((r): r is { t: typeof r.t; ev: NonNullable<typeof r.ev> } => !!r.ev)
-    .filter(({ t, ev }) => (tab === 'past') === (!!t.usedAt || isPast(ev)))
+    .filter(isValidTicket)
+    .filter((t) => (tab === 'past') === (t.status === 'USED' || new Date(t.startsAt).getTime() < now))
     .sort((a, b) => {
-      const d = new Date(a.ev.startsAt).getTime() - new Date(b.ev.startsAt).getTime();
+      const d = new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime();
       return tab === 'past' ? -d : d;
     });
 
@@ -76,19 +118,21 @@ export function TicketsPage() {
             title={tab === 'upcoming' ? 'Aucun billet à venir.' : 'Rien dans les archives.'}
             body={
               tab === 'upcoming'
-                ? "Vos prochains billets s'afficheront ici avec leur QR code, prêts même sans réseau."
-                : 'Les billets utilisés viendront ici, avec les reçus à télécharger.'
+                ? "Vos prochains billets s'afficheront ici avec leur QR code et leur PDF."
+                : 'Les billets utilisés ou des événements passés viendront ici.'
             }
             cta={<Link to="/explorer" className="btn btn--primary"><Compass size={19} />Explorer les événements</Link>}
           />
         ) : (
           <div className={s.list}>
-            {rows.map(({ t, ev }) => (
-              <TicketCard key={t.ref} ticket={t} event={ev} variant={tab} />
+            {rows.map((t) => (
+              <TicketCard key={t.ref} ticket={t} event={events.find((e) => e.numericId === t.eventNumericId)} variant={tab} />
             ))}
           </div>
         )}
       </div>
+
+      <GuestOrdersSection />
     </main>
   );
 }

@@ -96,6 +96,7 @@ export const toEvent = (e: ApiEvent): Event => {
     .map(toTicketType);
   return {
     id: e.uuid,
+    numericId: e.id,
     name: e.name,
     category: e.categoryDisplayName || e.category || 'Autre',
     venue: e.venueName ?? '',

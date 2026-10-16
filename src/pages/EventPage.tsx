@@ -36,7 +36,6 @@ export function EventPage() {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [aboutOpen, setAboutOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [following, setFollowing] = useState(false);
   const [toast, setToast] = useState('');
 
   // Reprend le panier en cours s'il concerne cet événement.
@@ -64,6 +63,8 @@ export function EventPage() {
   const longAbout = ev.description.length > ABOUT_LIMIT;
   const about = aboutOpen || !longAbout ? ev.description : ev.description.slice(0, ABOUT_LIMIT).trim() + '…';
   const similar = all.filter((x) => x.id !== ev.id && x.category === ev.category).slice(0, 3);
+  // Événements publiés de la même structure (catalogue de l'API)
+  const organizerEvents = ev.organizer.id ? all.filter((x) => x.organizer.id === ev.organizer.id).length : 0;
   const lowStock = ev.seatsLeft < 120;
 
   const info: InfoRow[] = [
@@ -140,11 +141,13 @@ export function EventPage() {
             <div className={s.orgAvatar}><IdentificationBadge size={22} /></div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className={s.orgName}>{ev.organizer.name}</div>
-              <div className={s.orgMeta}>Organisateur · 18 événements</div>
+              <div className={s.orgMeta}>Organisateur{organizerEvents ? ` · ${plural(organizerEvents, 'événement')}` : ''}</div>
             </div>
-            <button type="button" className={cx(s.follow, following && s.followOn)} aria-pressed={following} onClick={() => setFollowing((f) => !f)}>
-              {following ? 'Suivi' : 'Suivre'}
-            </button>
+            {ev.organizer.id && (
+              <Link to={`/explorer?organisateur=${encodeURIComponent(ev.organizer.id)}`} className={s.follow}>
+                Ses événements
+              </Link>
+            )}
           </div>
 
           <h2 className={s.h2}>À propos</h2>

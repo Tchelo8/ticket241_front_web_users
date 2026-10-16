@@ -15,6 +15,8 @@ const WaitingPage = lazy(() => import('./pages/WaitingPage').then((m) => ({ defa
 const SuccessPage = lazy(() => import('./pages/SuccessPage').then((m) => ({ default: m.SuccessPage })));
 const TicketsPage = lazy(() => import('./pages/TicketsPage').then((m) => ({ default: m.TicketsPage })));
 const TicketPage = lazy(() => import('./pages/TicketPage').then((m) => ({ default: m.TicketPage })));
+const GuestOrderPage = lazy(() => import('./pages/GuestOrderPage').then((m) => ({ default: m.GuestOrderPage })));
+const RecoverTicketsPage = lazy(() => import('./pages/RecoverTicketsPage').then((m) => ({ default: m.RecoverTicketsPage })));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })));
 const OtpVerificationPage = lazy(() => import('./pages/OtpVerificationPage').then((m) => ({ default: m.OtpVerificationPage })));
@@ -67,11 +69,14 @@ export function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/explorer" element={<ExplorerPage />} />
           <Route path="/evenements/:id" element={<EventPage />} />
-          <Route path="/paiement" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
-          <Route path="/paiement/attente" element={<RequireAuth><WaitingPage /></RequireAuth>} />
-          <Route path="/paiement/confirme" element={<RequireAuth><SuccessPage /></RequireAuth>} />
-          <Route path="/billets" element={<RequireAuth><TicketsPage /></RequireAuth>} />
+          {/* Achat possible sans compte : paiement, attente et confirmation sont publics */}
+          <Route path="/paiement" element={<CheckoutPage />} />
+          <Route path="/paiement/attente" element={<WaitingPage />} />
+          <Route path="/paiement/confirme" element={<SuccessPage />} />
+          <Route path="/billets" element={<TicketsPage />} />
           <Route path="/billets/:ref" element={<RequireAuth><TicketPage /></RequireAuth>} />
+          <Route path="/commande/:orderId" element={<GuestOrderPage />} />
+          <Route path="/retrouver-mes-billets" element={<RecoverTicketsPage />} />
           <Route path="/favoris" element={<FavoritesPage />} />
           <Route path="/connexion" element={<LoginPage />} />
           <Route path="/inscription" element={<SignupPage />} />
