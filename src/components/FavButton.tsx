@@ -1,12 +1,12 @@
 import { Heart } from '@phosphor-icons/react';
-import { usePrefs } from '../store/prefs';
+import { useFavorites } from '../api/hooks';
 import { cx } from '../lib/cx';
 import s from './FavButton.module.css';
 
 /** Cercle blanc 36px avec ombre et cœur ; actif → cœur plein cyan. */
 export function FavButton({ eventId, name, large }: { eventId: string; name: string; large?: boolean }) {
-  const on = usePrefs((st) => st.favIds.includes(eventId));
-  const toggle = usePrefs((st) => st.toggleFav);
+  const { isFav, toggle } = useFavorites();
+  const on = isFav(eventId);
   return (
     <button
       type="button"
@@ -16,7 +16,7 @@ export function FavButton({ eventId, name, large }: { eventId: string; name: str
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        toggle(eventId);
+        void toggle(eventId);
       }}
     >
       <Heart size={large ? 19 : 18} weight={on ? 'fill' : 'duotone'} />

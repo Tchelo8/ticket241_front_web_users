@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alarm, CaretDown, DeviceMobile, EnvelopeSimple, LockKey, LockSimple, MapPin, Megaphone, PaintBrush, SignOut, Ticket as TicketIcon, Trash, User } from '@phosphor-icons/react';
 import { ApiError, apiService, type EmailAlerts } from '../api/apiService';
-import { useCities, useTickets } from '../api/hooks';
+import { useCities, useFavorites, useTickets } from '../api/hooks';
 import { DoubleRule } from '../components/DoubleRule';
 import { TextField } from '../components/TextField';
 import { ThemeSwitch } from '../components/ThemeSwitch';
@@ -29,7 +29,8 @@ export function ProfilePage() {
   const update = useAuth((st) => st.update);
   const signOut = useAuth((st) => st.signOut);
   const setBuyer = useCheckout((st) => st.setBuyer);
-  const { city, setCity, favIds } = usePrefs();
+  const { city, setCity } = usePrefs();
+  const { ids: favIds } = useFavorites();
   const { data: tickets = [] } = useTickets();
   const { data: cities = [] } = useCities();
   const [name, setName] = useState(fullName(user));

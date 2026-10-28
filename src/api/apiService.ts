@@ -36,6 +36,11 @@ export const ENDPOINTS = {
   cities: '/events/cities/get/all/active',
   organizers: '/events/structures/public',
 
+  // Favoris du compte (JWT)
+  favorites: '/events/favorites',
+  favorite: (uuid: string) => `/events/favorites/${enc(uuid)}`,
+  favoritesImport: '/events/favorites/import',
+
   // Commandes avec compte (JWT)
   reserve: '/tickets/reserve',
   order: (orderId: string) => `/tickets/order/${enc(orderId)}`,
@@ -203,6 +208,17 @@ export const apiService: ApiService = {
   },
   organizers: {
     list: () => request<ApiPublicStructure[]>(ENDPOINTS.organizers).then((l) => (l ?? []).map(toOrganizer)),
+  },
+  favorites: {
+    // Du plus récent au plus ancien ; les événements repassés en brouillon sont masqués par le serveur.
+    list: () => request<ApiEvent[]>(ENDPOINTS.favorites).then((l) => (l ?? []).map(toEvent)),
+    add: (id) => request(ENDPOINTS.favorite(id), { method: 'PUT' }),
+    remove: (id) => request(ENDPOINTS.favorite(id), { method: 'DELETE' }),
+    // 100 au plus par appel (limite du serveur)
+    import: (ids) =>
+      request<ApiEvent[]>(ENDPOINTS.favoritesImport, { method: 'POST', body: { eventUuids: ids.slice(0, 100) } }).then(
+        (l) => (l ?? []).map(toEvent),
+      ),
   },
   orders: {
     reserve: async (req, guest) => {

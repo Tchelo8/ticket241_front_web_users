@@ -1,19 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Compass, MapPin } from '@phosphor-icons/react';
-import { useEvents } from '../api/hooks';
+import { useEvents, useFavorites } from '../api/hooks';
 import { EmptyState } from '../components/EmptyState';
 import { FavButton } from '../components/FavButton';
-import { usePrefs } from '../store/prefs';
 import { formatShortDate, formatTime, fromPrice, plural } from '../lib/format';
 import nofavAnim from '../assets/lottie/nofav.json';
 import { Loading } from './Loading';
 import s from './FavoritesPage.module.css';
 
 export function FavoritesPage() {
-  const favIds = usePrefs((st) => st.favIds);
+  // Avec un compte, la liste vient du serveur ; sans compte, des événements publiés gardés dans le navigateur
+  const { ids, accountEvents, isLoading: favLoading } = useFavorites();
   const { data: events, isLoading } = useEvents();
-  if (isLoading || !events) return <Loading />;
-  const favs = events.filter((e) => favIds.includes(e.id));
+  if (favLoading || (!accountEvents && (isLoading || !events))) return <Loading />;
+  const favs = accountEvents ?? (events ?? []).filter((e) => ids.includes(e.id));
 
   return (
     <main className="container">

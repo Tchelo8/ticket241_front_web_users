@@ -101,6 +101,14 @@ export interface ApiService {
   organizers: {
     list(): Promise<Organizer[]>;
   };
+  /** Favoris du compte connecté (JWT). Sans compte, ils restent dans le navigateur (store prefs). */
+  favorites: {
+    list(): Promise<Event[]>;
+    add(eventId: string): Promise<void>;
+    remove(eventId: string): Promise<void>;
+    /** Verse les favoris du navigateur sur le compte ; renvoie la liste complète du compte. */
+    import(eventIds: string[]): Promise<Event[]>;
+  };
   orders: {
     /** Avec compte si une session est ouverte, sinon sans compte (téléphone obligatoire). */
     reserve(req: ReserveRequest, guest: boolean): Promise<Reservation>;

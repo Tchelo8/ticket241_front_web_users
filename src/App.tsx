@@ -4,6 +4,7 @@ import { SiteHeader } from './components/SiteHeader';
 import { SiteFooter } from './components/SiteFooter';
 import { usePrefs } from './store/prefs';
 import { useAuth, watchSessionExpiry } from './store/auth';
+import { useFavoritesSync } from './api/hooks';
 import { Loading } from './pages/Loading';
 
 // Un fichier par écran, chargé à la demande.
@@ -56,6 +57,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export function App() {
   const { pathname } = useLocation();
   useEffect(() => watchSessionExpiry(), []);
+  useFavoritesSync();
   return (
     <>
       <ThemeSync />

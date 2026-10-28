@@ -270,3 +270,43 @@ describe('apiService — vérification du code reçu par e-mail', () => {
     await expect(apiService.signup.verify('074123456', '123456')).rejects.toBeInstanceOf(ApiError);
   });
 });
+
+describe('apiService — favoris du compte', () => {
+  // Favori tel que renvoyé par event-service (EventSummaryDto)
+  const FAV_EVENT = {
+    id: 7, uuid: 'u-jazz', name: 'Nuit du Jazz', slug: 'nuit-du-jazz', coverImageUrl: null,
+    category: 'CONCERT', categoryDisplayName: 'Concert', startDate: '2026-12-20T20:00:00',
+    venueName: 'Institut Français', cityId: 1, cityName: 'Libreville', totalSeats: 450, availableSeats: 186,
+    minPrice: 15000, eventStatus: 'PUBLISHED', isFeatured: false, isSaleOpen: true,
+  };
+
+  it('ajoute, retire et liste les favoris avec le JWT', async () => {
+    useAuth.getState().signIn(USER, 'jwt-123');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify([FAV_EVENT]), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await apiService.favorites.add('u-jazz');
+    await apiService.favorites.remove('u-jazz');
+    const list = await apiService.favorites.list();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(API_BASE_URL + '/events/favorites/u-jazz');
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'PUT' });
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: 'DELETE' });
+    expect(fetchMock.mock.calls[2][1].headers.Authorization).toBe('Bearer jwt-123');
+    expect(list.map((e) => e.id)).toEqual(['u-jazz']);
+  });
+
+  it('verse au plus 100 favoris du navigateur sur le compte', async () => {
+    useAuth.getState().signIn(USER, 'jwt-123');
+    const fetchMock = respond(200, [FAV_EVENT]);
+    vi.stubGlobal('fetch', fetchMock);
+
+    await apiService.favorites.import(Array.from({ length: 120 }, (_, i) => `u-${i}`));
+
+    expect(fetchMock.mock.calls[0][0]).toBe(API_BASE_URL + '/events/favorites/import');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).eventUuids).toHaveLength(100);
+  });
+});

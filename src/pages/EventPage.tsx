@@ -4,10 +4,9 @@ import {
   ArrowLeft, ArrowUUpLeft, Armchair, CalendarBlank, CaretDown, Clock, DoorOpen, Heart, IdentificationBadge,
   MapPin, MapPinArea, ShareNetwork, ShieldCheck, Signpost, UsersThree, type Icon,
 } from '@phosphor-icons/react';
-import { useEvent, useEvents } from '../api/hooks';
+import { useEvent, useEvents, useFavorites } from '../api/hooks';
 import { QtyStepper } from '../components/QtyStepper';
 import { useCart } from '../store/cart';
-import { usePrefs } from '../store/prefs';
 import {
   fcfa, fcfaShort, formatLongDate, formatLongDateYear, formatShortDate, formatTime, fromPrice, groupNumber, plural,
 } from '../lib/format';
@@ -30,8 +29,8 @@ export function EventPage() {
   const { data: all = [] } = useEvents();
   const cart = useCart((st) => st.cart);
   const setCart = useCart((st) => st.setCart);
-  const fav = usePrefs((st) => (id ? st.favIds.includes(id) : false));
-  const toggleFav = usePrefs((st) => st.toggleFav);
+  const { isFav, toggle: toggleFav } = useFavorites();
+  const fav = id ? isFav(id) : false;
 
   const [qty, setQty] = useState<Record<string, number>>({});
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -129,7 +128,7 @@ export function EventPage() {
             <span><MapPin size={18} color="var(--acc)" />{ev.venue}, {ev.city}</span>
           </div>
           <div className={s.actions}>
-            <button type="button" className={cx(s.pillBtn, fav && s.pillOn)} aria-pressed={fav} onClick={() => toggleFav(ev.id)}>
+            <button type="button" className={cx(s.pillBtn, fav && s.pillOn)} aria-pressed={fav} onClick={() => void toggleFav(ev.id)}>
               <Heart size={18} weight={fav ? 'fill' : 'duotone'} />{fav ? 'Enregistré' : 'Enregistrer'}
             </button>
             <button type="button" className={s.pillBtn} onClick={share}>
