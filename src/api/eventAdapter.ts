@@ -48,6 +48,7 @@ export type ApiEvent = {
   isCancelled: boolean | null;
   minAge: number | null;
   allowRefund: boolean | null;
+  refundDeadlineDays: number | null;
   viewCount: number | null;
   isSaleOpen: boolean | null;
   ticketCategories: ApiTicketCategory[] | null;
@@ -113,6 +114,7 @@ export const toEvent = (e: ApiEvent): Event => {
     description: e.fullDescription ?? '',
     ticketTypes: types,
     refundable: !!e.allowRefund,
+    refundDeadlineDays: e.refundDeadlineDays ?? 0,
     saleOpen: !!e.isSaleOpen && !e.isCancelled,
     cancelled: !!e.isCancelled || e.eventStatus === 'CANCELLED',
     featured: !!e.isFeatured,

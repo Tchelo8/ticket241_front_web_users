@@ -17,7 +17,7 @@ describe('Centre d’aide', () => {
   it('filtre par thème depuis un raccourci et synchronise l’URL', async () => {
     const user = userEvent.setup();
     renderRoute('/aide', <HelpPage />);
-    await user.click(screen.getByRole('button', { name: /Annulation Remboursement sous 48 h/ }));
+    await user.click(screen.getByRole('button', { name: /Annulation Selon les conditions de l'événement/ }));
     expect(location()).toBe('/aide?theme=Annulation');
     expect(questions()).toHaveLength(2);
   });

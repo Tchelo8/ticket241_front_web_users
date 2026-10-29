@@ -189,8 +189,8 @@ export function ExplorerPage() {
             <span className={s.refundText}>
               <ShieldCheck size={19} color="var(--acc)" />
               <span>
-                <span className={s.refundTitle}>Annulation gratuite</span>
-                <span className={s.refundSub}>Remboursable sous 48 h</span>
+                <span className={s.refundTitle}>Remboursable</span>
+                <span className={s.refundSub}>Selon le délai de l'organisateur</span>
               </span>
             </span>
           </Toggle>

@@ -34,8 +34,10 @@ export type Event = {
   description: string;
   /** Vide dans les listes : seul le détail renvoie les catégories de billets. */
   ticketTypes: TicketType[];
-  /** Annulation gratuite sous 48 h. */
+  /** Remboursable, selon le délai fixé par l'organisateur. */
   refundable: boolean;
+  /** Jours avant l'événement jusqu'auxquels le remboursement est possible. */
+  refundDeadlineDays: number;
   /** La billetterie est ouverte : pilote le bouton « Réserver ». */
   saleOpen: boolean;
   cancelled: boolean;

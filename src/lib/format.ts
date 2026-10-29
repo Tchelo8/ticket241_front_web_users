@@ -16,6 +16,13 @@ export const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : 
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/** Délai de remboursement fixé par l'organisateur : « jusqu'à 7 jours avant l'événement ». */
+export const refundDelay = (days: number) =>
+  days <= 0 ? "jusqu'au début de l'événement" : `jusqu'à ${plural(days, 'jour')} avant l'événement`;
+
+/** Même délai en début de phrase : « Jusqu'à 7 jours avant l'événement ». */
+export const refundDelayLabel = (days: number) => capitalize(refundDelay(days));
+
 const TZ = 'Africa/Libreville';
 
 const shortDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', timeZone: TZ });

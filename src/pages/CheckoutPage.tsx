@@ -13,7 +13,7 @@ import { cartCount, useCart } from '../store/cart';
 import { METHODS, useCheckout } from '../store/checkout';
 import { useGuestOrders } from '../store/guestOrders';
 import { subtotal, ticketPrice } from '../lib/events';
-import { fcfa, formatLongDate, formatTime, phoneDigits } from '../lib/format';
+import { fcfa, formatLongDate, formatTime, phoneDigits, refundDelay } from '../lib/format';
 import { cx } from '../lib/cx';
 import type { PaymentMethod, Ticket } from '../types';
 import s from './CheckoutPage.module.css';
@@ -229,7 +229,7 @@ export function CheckoutPage() {
               <div>
                 <div className={s.refundTitle}>Annulation possible</div>
                 <p className={s.refundText}>
-                  Cet événement accepte les annulations jusqu'à 2 jours avant la date : contactez le support avec le numéro de votre billet.
+                  Cet événement accepte les annulations {refundDelay(ev.refundDeadlineDays)} : contactez le support avec le numéro de votre billet.
                 </p>
               </div>
             </section>

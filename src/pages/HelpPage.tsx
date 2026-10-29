@@ -15,7 +15,7 @@ import s from './HelpPage.module.css';
 const TOPICS: { theme: FaqTheme; Icon: Icon; desc: string }[] = [
   { theme: 'Billets', Icon: Ticket, desc: 'Retrouver, télécharger, transférer' },
   { theme: 'Paiement', Icon: DeviceMobile, desc: 'Airtel Money, Moov Money' },
-  { theme: 'Annulation', Icon: ArrowUUpLeft, desc: 'Remboursement sous 48 h' },
+  { theme: 'Annulation', Icon: ArrowUUpLeft, desc: "Selon les conditions de l'événement" },
   { theme: 'Compte', Icon: UserCircle, desc: 'Numéro, mot de passe, profil' },
 ];
 

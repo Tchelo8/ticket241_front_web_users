@@ -9,6 +9,7 @@ import { QtyStepper } from '../components/QtyStepper';
 import { useCart } from '../store/cart';
 import {
   fcfa, fcfaShort, formatLongDate, formatLongDateYear, formatShortDate, formatTime, fromPrice, groupNumber, plural,
+  refundDelay, refundDelayLabel,
 } from '../lib/format';
 import { saleClosedReason, subtotal } from '../lib/events';
 import { cx } from '../lib/cx';
@@ -78,7 +79,7 @@ export function EventPage() {
       ? [
           { Icon: DoorOpen, label: 'Ouverture des portes', value: formatTime(ev.doorsAt) },
           { Icon: Signpost, label: 'Adresse', value: `${ev.address}, ${ev.city}` },
-          { Icon: ArrowUUpLeft, label: 'Remboursement', value: ev.refundable ? "Jusqu'à 2 jours avant l'événement" : 'Non remboursable' },
+          { Icon: ArrowUUpLeft, label: 'Remboursement', value: ev.refundable ? refundDelayLabel(ev.refundDeadlineDays) : 'Non remboursable' },
           { Icon: UsersThree, label: 'Âge minimum', value: ev.minAge },
           { Icon: IdentificationBadge, label: 'Organisateur', value: ev.organizer.name },
         ]
@@ -240,7 +241,7 @@ export function EventPage() {
           {ev.refundable && (
             <div className={s.note}>
               <ShieldCheck size={19} />
-              Annulation gratuite jusqu'à 48 h avant l'événement. Remboursement intégral.
+              Remboursement possible {refundDelay(ev.refundDeadlineDays)}.
             </div>
           )}
         </aside>
